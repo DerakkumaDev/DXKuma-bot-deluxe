@@ -1,18 +1,16 @@
 using DXKumaBot.Bot.Message;
+using System.Net;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using File = System.IO.File;
 
 namespace DXKumaBot.Bot.Telegram;
 
-public class TgBot : IBot
+public class TgBot(TelegramConfig config) : IBot
 {
-    private readonly TelegramBotClient _bot;
-
-    public TgBot()
-    {
-        // _bot = new TelegramBotClient();
-    }
+    private readonly TelegramBotClient _bot = new(config.BotToken,
+        config.Proxy.Enabled ? new(new HttpClientHandler { Proxy = new WebProxy(config.Proxy.Url, true) }) : default);
 
     public async Task SendMessageAsync(MessageReceivedEventArgs messageToReply, MessagePair messages)
     {
@@ -21,15 +19,33 @@ public class TgBot : IBot
             throw new ArgumentNullException(nameof(messageToReply));
         }
 
-        await SendMessageAsync(messageToReply.TgMessage.MessageId, messages);
+        await SendMessageAsync(messageToReply.TgMessage.Chat.Id, messages);
     }
 
-    public async Task RunAsync()
+    public event Utils.AsyncEventHandler<MessageReceivedEventArgs>? MessageReceived;
+
+    public void Run()
     {
-        throw new NotImplementedException();
+        _bot.StartReceiving(async (bot, update, _) =>
+        {
+            if (update is not
+                {
+                    Type: UpdateType.Message,
+                    Message:
+                    {
+                        Type: MessageType.Text,
+                        Text: not null
+                    }
+                } || MessageReceived is null)
+            {
+                return;
+            }
+
+            await MessageReceived.Invoke(bot, new(this, update.Message));
+        }, (_, e, _) => { Console.WriteLine(e); });
     }
 
-    public async Task SendMessageAsync(long id, MessagePair messages, int? threadId = null)
+    private async Task SendMessageAsync(long id, MessagePair messages, int? threadId = null)
     {
         if (messages.Media is null)
         {
@@ -37,7 +53,7 @@ public class TgBot : IBot
             return;
         }
 
-        InputFileStream file = InputFile.FromStream(messages.Media.Data);
+        InputFile file = InputFile.FromStream(File.OpenRead(messages.Media.Path));
         switch (messages.Media.Type)
         {
             case MediaType.Audio:

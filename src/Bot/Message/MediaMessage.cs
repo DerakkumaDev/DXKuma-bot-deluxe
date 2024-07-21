@@ -1,10 +1,10 @@
 namespace DXKumaBot.Bot.Message;
 
-public class MediaMessage(MediaType type, MemoryStream stream)
+public class MediaMessage(MediaType type, string path)
 {
     public MediaType Type { get; } = type;
 
-    public MemoryStream Data { get; } = stream;
+    public string Path { get; } = path;
 
     public static implicit operator MessagePair(MediaMessage message)
     {

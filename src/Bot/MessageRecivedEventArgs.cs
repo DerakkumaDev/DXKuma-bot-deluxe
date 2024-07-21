@@ -22,7 +22,7 @@ public class MessageReceivedEventArgs : EventArgs
 
     public GroupMessageEvent? QqMessage { get; }
     public TgMessage? TgMessage { get; }
-    public string Text => QqMessage?.EventMessage ?? TgMessage?.Text ?? throw new NullReferenceException();
+    public string Text => QqMessage?.Chain.ToPreviewText() ?? TgMessage?.Text ?? throw new NullReferenceException();
 
     public async Task Reply(MessagePair messages)
     {
