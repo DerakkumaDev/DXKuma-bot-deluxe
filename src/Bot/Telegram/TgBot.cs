@@ -8,10 +8,22 @@ namespace DXKumaBot.Bot.Telegram;
 public class TgBot : IBot
 {
     private readonly TelegramBotClient _bot;
+
     public TgBot()
     {
         // _bot = new TelegramBotClient();
     }
+
+    public async Task SendMessageAsync(MessageReceivedEventArgs messageToReply, MessagePair messages)
+    {
+        if (messageToReply.TgMessage is null)
+        {
+            throw new ArgumentNullException(nameof(messageToReply));
+        }
+
+        await SendMessageAsync(messageToReply.TgMessage.MessageId, messages);
+    }
+
     public async Task RunAsync()
     {
         throw new NotImplementedException();
@@ -37,15 +49,5 @@ public class TgBot : IBot
             default:
                 throw new ArgumentOutOfRangeException(nameof(messages));
         }
-    }
-
-    public async Task SendMessageAsync(MessageReceivedEventArgs messageToReply, MessagePair messages)
-    {
-        if (messageToReply.TgMessage is null)
-        {
-            throw new ArgumentNullException(nameof(messageToReply));
-        }
-
-        await SendMessageAsync(messageToReply.TgMessage.MessageId, messages);
     }
 }

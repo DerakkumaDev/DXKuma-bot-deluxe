@@ -14,7 +14,7 @@ public static class Draw
     {
         image.Mutate(x => x.Resize(Convert.ToInt32(image.Width * ratio), Convert.ToInt32(image.Height * ratio)));
     }
-    
+
     public static void Resize(this Image image, int width, int height)
     {
         image.Mutate(x => x.Resize(width, height));

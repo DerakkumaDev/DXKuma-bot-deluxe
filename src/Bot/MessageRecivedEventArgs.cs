@@ -1,3 +1,4 @@
+using DXKumaBot.Bot.Message;
 using Lagrange.Core.Event.EventArg;
 using TgMessage = Telegram.Bot.Types.Message;
 
@@ -5,18 +6,26 @@ namespace DXKumaBot.Bot;
 
 public class MessageReceivedEventArgs : EventArgs
 {
+    private readonly IBot _bot;
+
     public MessageReceivedEventArgs(IBot bot, GroupMessageEvent message)
     {
         _bot = bot;
         QqMessage = message;
     }
+
     public MessageReceivedEventArgs(IBot bot, TgMessage message)
     {
         _bot = bot;
         TgMessage = message;
     }
-    
-    private readonly IBot _bot;
+
     public GroupMessageEvent? QqMessage { get; }
     public TgMessage? TgMessage { get; }
+    public string Text => QqMessage?.EventMessage ?? TgMessage?.Text ?? throw new NullReferenceException();
+
+    public async Task Reply(MessagePair messages)
+    {
+        await _bot.SendMessageAsync(this, messages);
+    }
 }

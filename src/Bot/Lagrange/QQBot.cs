@@ -1,7 +1,9 @@
+using DXKumaBot.Bot.Message;
 using Lagrange.Core;
 using Lagrange.Core.Common;
 using Lagrange.Core.Common.Interface;
 using Lagrange.Core.Common.Interface.Api;
+using Lagrange.Core.Message;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -25,6 +27,11 @@ public class QQBot : IBot
             Protocol = Protocols.Linux,
             CustomSignProvider = new OneBotSigner()
         }, deviceInfo, _keyStore ?? new BotKeystore());
+    }
+
+    public async Task SendMessageAsync(MessageReceivedEventArgs messageToReply, MessagePair messages)
+    {
+        await SendMessageAsync(messageToReply.QqMessage!.Chain.GroupUin, messages);
     }
 
     public async Task RunAsync()
@@ -86,5 +93,37 @@ public class QQBot : IBot
         {
             ReferenceHandler = ReferenceHandler.Preserve
         });
+    }
+
+    public async Task SendMessageAsync(uint? id, MessagePair messages)
+    {
+        if (id is null)
+        {
+            throw new ArgumentNullException(nameof(id));
+        }
+
+        MessageBuilder messageBuilder = MessageBuilder.Group((uint)id);
+        if (messages.Media is not null)
+        {
+            byte[] dataStream = messages.Media.Data.ToArray();
+            switch (messages.Media.Type)
+            {
+                case MediaType.Audio:
+                    messageBuilder.Record(dataStream);
+                    break;
+                case MediaType.Photo:
+                    messageBuilder.Image(dataStream);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(messages));
+            }
+        }
+
+        if (messages.Text is not null)
+        {
+            messageBuilder.Text(messages.Text.Text);
+        }
+
+        await _bot.SendMessage(messageBuilder.Build());
     }
 }

@@ -36,7 +36,7 @@ public static class Best50
             pos.X = 0;
             ++pos.Y;
         }
-        
+
         MemoryStream stream = new();
         await image.SaveAsJpegAsync(stream);
         return stream;
