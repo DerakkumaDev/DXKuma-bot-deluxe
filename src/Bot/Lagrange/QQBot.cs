@@ -121,7 +121,7 @@ public class QQBot : IBot
 
         if (messages.Text is not null)
         {
-            messageBuilder.Text(messages.Text.Text);
+            messageBuilder.Text(messages.Text);
         }
 
         await _bot.SendMessage(messageBuilder.Build());

@@ -4,28 +4,17 @@ using System.Text.RegularExpressions;
 
 namespace DXKumaBot.Functions;
 
-public static partial class LoveYou
+public sealed partial class LoveYou : RegexFunctionBase
 {
-    public static void Register()
+    protected override async Task Main(object? sender, MessageReceivedEventArgs args)
     {
-        BotInstance.MessageReceived += Main;
-    }
-
-    private static async Task Main(object? sender, MessageReceivedEventArgs args)
-    {
-        if (MessageRegex().IsMatch(args.Text))
-        {
-            return;
-        }
-
-        TextMessage textMessage = new()
+        TextMessage message = new()
         {
             Text = "迪拉熊也喜欢你❤️"
         };
-        MessagePair messages = new(textMessage);
-        await args.Reply(messages);
+        await args.Reply(message);
     }
 
     [GeneratedRegex("^(迪拉熊|dlx)我喜欢你$", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Singleline)]
-    private static partial Regex MessageRegex();
+    protected override partial Regex MessageRegex();
 }

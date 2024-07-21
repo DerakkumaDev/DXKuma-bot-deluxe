@@ -11,4 +11,14 @@ public class TextMessage
             Text = text
         };
     }
+
+    public static implicit operator string(TextMessage message)
+    {
+        return message.Text;
+    }
+
+    public static implicit operator MessagePair(TextMessage message)
+    {
+        return new(message);
+    }
 }
