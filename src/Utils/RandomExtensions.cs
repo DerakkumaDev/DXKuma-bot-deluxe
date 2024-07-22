@@ -9,7 +9,7 @@ public static class RandomExtensions
         for (int index = 0; index < weights.Count; index++)
         {
             randomResult -= weights[index];
-            if (randomResult < weights[index])
+            if (randomResult < 0)
             {
                 return index;
             }

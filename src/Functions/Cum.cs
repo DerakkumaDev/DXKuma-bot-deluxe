@@ -15,6 +15,6 @@ public sealed partial class Cum : RegexFunctionBase
         await args.Reply(message);
     }
 
-    [GeneratedRegex("dlxcum", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Singleline)]
+    [GeneratedRegex("dlxcum", RegexOptions.IgnoreCase | RegexOptions.Singleline)]
     protected override partial Regex MessageRegex();
 }

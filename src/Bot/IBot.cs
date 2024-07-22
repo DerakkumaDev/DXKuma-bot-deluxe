@@ -8,5 +8,5 @@ namespace DXKumaBot.Bot;
 public interface IBot
 {
     Task SendMessageAsync(MessageReceivedEventArgs messageToReply, MessagePair messages,
-        Possible<GroupMessageEvent, TgMessage> source);
+        Possible<GroupMessageEvent, TgMessage>? source);
 }

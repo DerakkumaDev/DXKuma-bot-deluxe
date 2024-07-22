@@ -24,9 +24,9 @@ public class MessageReceivedEventArgs : EventArgs
     public TgMessage? TgMessage { get; }
     public string Text => QqMessage?.Chain.ToPreviewText() ?? TgMessage?.Text ?? throw new NullReferenceException();
 
-    public async Task Reply(MessagePair messages)
+    public async Task Reply(MessagePair messages, bool noReply = false)
     {
         await _bot.SendMessageAsync(this, messages,
-            QqMessage is null ? TgMessage ?? throw new NullReferenceException() : QqMessage);
+            noReply ? default : QqMessage is null ? TgMessage ?? throw new NullReferenceException() : QqMessage);
     }
 }

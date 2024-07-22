@@ -6,10 +6,7 @@ public class TextMessage
 
     public static implicit operator TextMessage(string text)
     {
-        return new()
-        {
-            Text = text
-        };
+        return new() { Text = text };
     }
 
     public static implicit operator string(TextMessage message)

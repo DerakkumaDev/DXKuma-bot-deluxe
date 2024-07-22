@@ -17,12 +17,14 @@ public sealed class BotInstance(Config config)
         LoveYou loveYou = new();
         WannaCao wannaCao = new();
         Cum cum = new();
-        Choose choose = new();
+        Roll roll = new();
+        EatBreak eatBreak = new();
 
         loveYou.Register();
         wannaCao.Register();
         cum.Register();
-        choose.Register();
+        roll.Register();
+        eatBreak.Register();
     }
 
     private void RegisterEvents()

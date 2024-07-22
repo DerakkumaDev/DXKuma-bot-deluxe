@@ -16,14 +16,15 @@ public class TgBot(TelegramConfig config) : IBot
         config.Proxy.Enabled ? new(new HttpClientHandler { Proxy = new WebProxy(config.Proxy.Url, true) }) : default);
 
     public async Task SendMessageAsync(MessageReceivedEventArgs messageToReply, MessagePair messages,
-        Possible<GroupMessageEvent, TgMessage> source)
+        Possible<GroupMessageEvent, TgMessage>? source)
     {
         if (messageToReply.TgMessage is null)
         {
             throw new ArgumentNullException(nameof(messageToReply));
         }
 
-        await SendMessageAsync(messageToReply.TgMessage.Chat.Id, messages, source: source);
+        await SendMessageAsync(messageToReply.TgMessage.Chat.Id, messages,
+            source: source is null ? default(TgMessage?) : source);
     }
 
     public event Utils.AsyncEventHandler<MessageReceivedEventArgs>? MessageReceived;
@@ -32,15 +33,8 @@ public class TgBot(TelegramConfig config) : IBot
     {
         _bot.StartReceiving(async (bot, update, _) =>
         {
-            if (update is not
-                {
-                    Type: UpdateType.Message,
-                    Message:
-                    {
-                        Type: MessageType.Text,
-                        Text: not null
-                    }
-                } || MessageReceived is null)
+            if (update is not { Type: UpdateType.Message, Message: { Type: MessageType.Text, Text: not null } } ||
+                MessageReceived is null)
             {
                 return;
             }
@@ -54,7 +48,7 @@ public class TgBot(TelegramConfig config) : IBot
         if (messages.Media is null)
         {
             await _bot.SendTextMessageAsync(id, messages.Text!.Text, threadId,
-                replyParameters: source is null ? default(ReplyParameters) : source);
+                replyParameters: source is null ? default(ReplyParameters?) : source);
             return;
         }
 
@@ -63,11 +57,11 @@ public class TgBot(TelegramConfig config) : IBot
         {
             case MediaType.Audio:
                 await _bot.SendAudioAsync(id, file, threadId, messages.Text?.Text,
-                    replyParameters: source is null ? default(ReplyParameters) : source);
+                    replyParameters: source is null ? default(ReplyParameters?) : source);
                 break;
             case MediaType.Photo:
                 await _bot.SendPhotoAsync(id, file, threadId, messages.Text?.Text,
-                    replyParameters: source is null ? default(ReplyParameters) : source);
+                    replyParameters: source is null ? default(ReplyParameters?) : source);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(messages));

@@ -32,10 +32,10 @@ public class QqBot : IBot
     }
 
     public async Task SendMessageAsync(MessageReceivedEventArgs messageToReply, MessagePair messages,
-        Possible<GroupMessageEvent, TgMessage> source)
+        Possible<GroupMessageEvent, TgMessage>? source = null)
     {
         await SendMessageAsync(messageToReply.QqMessage!.Chain.GroupUin, messages.Text!, messages.Media,
-            ((GroupMessageEvent?)source)?.Chain);
+            source is null ? default : ((GroupMessageEvent?)source)?.Chain);
     }
 
     public event AsyncEventHandler<MessageReceivedEventArgs>? MessageReceived;
@@ -127,7 +127,7 @@ public class QqBot : IBot
             throw new ArgumentNullException(nameof(id));
         }
 
-        MessageBuilder messageBuilder = MessageBuilder.Group((uint)id);
+        MessageBuilder messageBuilder = MessageBuilder.Group(id.Value);
         if (source is not null)
         {
             messageBuilder.Forward(source);
