@@ -1,6 +1,6 @@
 namespace DXKumaBot.Bot.Message;
 
-public class TextMessage
+public sealed class TextMessage
 {
     public required string Text { get; set; }
 

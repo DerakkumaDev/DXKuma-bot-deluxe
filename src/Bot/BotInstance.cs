@@ -1,5 +1,4 @@
-using DXKumaBot.Bot.Lagrange;
-using DXKumaBot.Bot.Telegram;
+using DXKumaBot.Bot.EventArg;
 using DXKumaBot.Functions;
 using DXKumaBot.Utils;
 
@@ -11,6 +10,7 @@ public sealed class BotInstance(Config config)
     private readonly TgBot _tgBot = new(config.Telegram);
 
     public static event AsyncEventHandler<MessageReceivedEventArgs>? MessageReceived;
+    public static event AsyncEventHandler<PokedEventArgs>? Poked;
 
     private static void RegisterFunctions()
     {
@@ -19,17 +19,22 @@ public sealed class BotInstance(Config config)
         Cum cum = new();
         Roll roll = new();
         EatBreak eatBreak = new();
+        Repeater repeater = new();
+        Poke poke = new();
 
         loveYou.Register();
         wannaCao.Register();
         cum.Register();
         roll.Register();
         eatBreak.Register();
+        repeater.Register();
+        poke.Register();
     }
 
     private void RegisterEvents()
     {
         _qqBot.MessageReceived += MessageReceived;
+        _qqBot.Poked += Poked;
         _tgBot.MessageReceived += MessageReceived;
     }
 

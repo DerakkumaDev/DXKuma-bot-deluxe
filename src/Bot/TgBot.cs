@@ -1,6 +1,5 @@
+using DXKumaBot.Bot.EventArg;
 using DXKumaBot.Bot.Message;
-using DXKumaBot.Utils;
-using Lagrange.Core.Event.EventArg;
 using System.Net;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -8,23 +7,17 @@ using Telegram.Bot.Types.Enums;
 using File = System.IO.File;
 using TgMessage = Telegram.Bot.Types.Message;
 
-namespace DXKumaBot.Bot.Telegram;
+namespace DXKumaBot.Bot;
 
-public class TgBot(TelegramConfig config) : IBot
+public sealed class TgBot(TelegramConfig config) : IBot
 {
     private readonly TelegramBotClient _bot = new(config.BotToken,
         config.Proxy.Enabled ? new(new HttpClientHandler { Proxy = new WebProxy(config.Proxy.Url, true) }) : default);
 
-    public async Task SendMessageAsync(MessageReceivedEventArgs messageToReply, MessagePair messages,
-        Possible<GroupMessageEvent, TgMessage>? source)
+    public async Task SendMessageAsync(MessagePair messages, BotMessage source, bool noReply)
     {
-        if (messageToReply.TgMessage is null)
-        {
-            throw new ArgumentNullException(nameof(messageToReply));
-        }
-
-        await SendMessageAsync(messageToReply.TgMessage.Chat.Id, messages,
-            source: source is null ? default(TgMessage?) : source);
+        await SendMessageAsync(source.ChatId, messages, source.TgMessage?.MessageThreadId,
+            noReply ? default : source.TgMessage);
     }
 
     public event Utils.AsyncEventHandler<MessageReceivedEventArgs>? MessageReceived;

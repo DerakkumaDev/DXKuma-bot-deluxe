@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace DXKumaBot.Response.Lxns;
 
-public class LxnsPlayer
+public sealed class LxnsPlayer
 {
     [JsonPropertyName("name")] public string? Name { get; set; }
 

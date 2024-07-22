@@ -1,4 +1,4 @@
-using DXKumaBot.Bot;
+using DXKumaBot.Bot.EventArg;
 using DXKumaBot.Bot.Message;
 using DXKumaBot.Utils;
 using System.Text.RegularExpressions;
@@ -23,15 +23,15 @@ public sealed partial class WannaCao : RegexFunctionBase
 
     private readonly int[] _weights = [11, 11, 11, 11, 11, 11, 11, 11, 11, 1];
 
-    protected override async Task Main(object? sender, MessageReceivedEventArgs args)
+    private protected override async Task Main(object? sender, MessageReceivedEventArgs args)
     {
         int index = Random.Shared.Choose(_weights);
         (string Text, int PhotoIndex) reply = _replies[index];
         string filePath = Path.Combine("Static", nameof(WannaCao), $"{reply.PhotoIndex}.png");
         MediaMessage message = new(MediaType.Photo, filePath);
-        await args.Reply(new(reply.Text, message));
+        await args.Message.Reply(new(reply.Text, message));
     }
 
     [GeneratedRegex("(香草|想草)(迪拉熊|dlx)", RegexOptions.IgnoreCase | RegexOptions.Singleline)]
-    protected override partial Regex MessageRegex();
+    private protected override partial Regex MessageRegex();
 }

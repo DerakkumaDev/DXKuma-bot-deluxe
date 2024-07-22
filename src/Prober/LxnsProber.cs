@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 
 namespace DXKumaBot.Prober;
 
-public class LxnsProber
+public sealed class LxnsProber
 {
     private const string BaseUrl = "https://maimai.lxns.net/api/v0/maimai";
     private readonly HttpClient _httpClient;

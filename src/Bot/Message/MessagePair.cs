@@ -1,6 +1,6 @@
 namespace DXKumaBot.Bot.Message;
 
-public class MessagePair
+public sealed class MessagePair
 {
     public MessagePair(TextMessage message)
     {

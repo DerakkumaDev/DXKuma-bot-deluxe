@@ -1,6 +1,6 @@
 namespace DXKumaBot.Prober;
 
-public class DivingFishProber(string qq)
+public sealed class DivingFishProber(string qq)
 {
     // TODO
 }

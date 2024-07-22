@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace DXKumaBot.Response.Lxns;
 
-public class LxnsB50
+public sealed class LxnsB50
 {
     [JsonPropertyName("standard_total")] public int StandardTotal { get; set; }
 

@@ -1,6 +1,6 @@
 namespace DXKumaBot.Bot.Message;
 
-public class MediaMessage(MediaType type, string path)
+public sealed class MediaMessage(MediaType type, string path)
 {
     public MediaType Type { get; } = type;
 

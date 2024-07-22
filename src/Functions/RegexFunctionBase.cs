@@ -1,4 +1,5 @@
 using DXKumaBot.Bot;
+using DXKumaBot.Bot.EventArg;
 using System.Text.RegularExpressions;
 
 namespace DXKumaBot.Functions;
@@ -9,7 +10,7 @@ public abstract class RegexFunctionBase
     {
         BotInstance.MessageReceived += async (sender, args) =>
         {
-            if (!MessageRegex().IsMatch(args.Text))
+            if (!MessageRegex().IsMatch(args.Message.Text))
             {
                 return;
             }
@@ -18,7 +19,7 @@ public abstract class RegexFunctionBase
         };
     }
 
-    protected abstract Task Main(object? sender, MessageReceivedEventArgs args);
+    private protected abstract Task Main(object? sender, MessageReceivedEventArgs args);
 
-    protected abstract Regex MessageRegex();
+    private protected abstract Regex MessageRegex();
 }

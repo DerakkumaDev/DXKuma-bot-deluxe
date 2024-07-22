@@ -1,6 +1,6 @@
 namespace DXKumaBot.Utils;
 
-public class Possible<T1, T2>
+public sealed class Possible<T1, T2>
 {
     private readonly object? _obj;
 

@@ -1,7 +1,7 @@
 namespace DXKumaBot;
 
-public record Config(TelegramConfig Telegram);
+public sealed record Config(TelegramConfig Telegram);
 
-public record TelegramConfig(string BotToken, ProxyConfig Proxy);
+public sealed record TelegramConfig(string BotToken, ProxyConfig Proxy);
 
-public record ProxyConfig(bool Enabled, string Url);
+public sealed record ProxyConfig(bool Enabled, string Url);

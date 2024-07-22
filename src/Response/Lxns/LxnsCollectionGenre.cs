@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace DXKumaBot.Response.Lxns;
 
-public class LxnsCollectionGenre
+public sealed class LxnsCollectionGenre
 {
     [JsonPropertyName("id")] public int Id { get; set; }
 

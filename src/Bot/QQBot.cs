@@ -1,18 +1,17 @@
+using DXKumaBot.Bot.EventArg;
 using DXKumaBot.Bot.Message;
 using DXKumaBot.Utils;
 using Lagrange.Core;
 using Lagrange.Core.Common;
 using Lagrange.Core.Common.Interface;
 using Lagrange.Core.Common.Interface.Api;
-using Lagrange.Core.Event.EventArg;
 using Lagrange.Core.Message;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using TgMessage = Telegram.Bot.Types.Message;
 
-namespace DXKumaBot.Bot.Lagrange;
+namespace DXKumaBot.Bot;
 
-public class QqBot : IBot
+public sealed class QqBot : IBot
 {
     private readonly BotContext _bot;
     private readonly BotKeystore? _keyStore;
@@ -21,24 +20,18 @@ public class QqBot : IBot
     {
         BotDeviceInfo deviceInfo = GetDeviceInfo();
         _keyStore = LoadKeystore();
-        _bot = BotFactory.Create(new()
-        {
-            UseIPv6Network = false,
-            GetOptimumServer = true,
-            AutoReconnect = true,
-            Protocol = Protocols.Linux,
-            CustomSignProvider = new CustomSignProvider()
-        }, deviceInfo, _keyStore ?? new BotKeystore());
+        _bot = BotFactory.Create(new(), deviceInfo, _keyStore ?? new BotKeystore());
     }
 
-    public async Task SendMessageAsync(MessageReceivedEventArgs messageToReply, MessagePair messages,
-        Possible<GroupMessageEvent, TgMessage>? source = null)
+    public async Task SendMessageAsync(MessagePair messages, BotMessage source, bool noReply)
     {
-        await SendMessageAsync(messageToReply.QqMessage!.Chain.GroupUin, messages.Text!, messages.Media,
-            source is null ? default : ((GroupMessageEvent?)source)?.Chain);
+        await SendMessageAsync(Convert.ToUInt32(source.ChatId), messages.Text!, messages.Media,
+            noReply ? default : source.QqMessage);
     }
 
     public event AsyncEventHandler<MessageReceivedEventArgs>? MessageReceived;
+
+    public event AsyncEventHandler<PokedEventArgs>? Poked;
 
     private void RegisterEvents()
     {
@@ -56,6 +49,15 @@ public class QqBot : IBot
             }
 
             await MessageReceived.Invoke(sender, new(this, args));
+        };
+        _bot.Invoker.OnGroupPokeEvent += async (sender, args) =>
+        {
+            if (Poked is null)
+            {
+                return;
+            }
+
+            await Poked.Invoke(sender, new(this, args));
         };
     }
 
