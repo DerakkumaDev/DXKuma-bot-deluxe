@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 
 namespace DXKumaBot.Functions;
 
-public sealed class Repeater
+public sealed class Repeater : IFunction
 {
     private readonly ConcurrentDictionary<long, (string, int)> _lastMessages = new();
 

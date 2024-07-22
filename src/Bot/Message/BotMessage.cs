@@ -1,5 +1,4 @@
 using Lagrange.Core.Message;
-using TgMessage = Telegram.Bot.Types.Message;
 
 namespace DXKumaBot.Bot.Message;
 

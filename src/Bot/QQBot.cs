@@ -3,6 +3,7 @@ using DXKumaBot.Bot.Message;
 using DXKumaBot.Utils;
 using Lagrange.Core;
 using Lagrange.Core.Common;
+using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Common.Interface;
 using Lagrange.Core.Common.Interface.Api;
 using Lagrange.Core.Message;
@@ -29,9 +30,15 @@ public sealed class QqBot : IBot
             noReply ? default : source.QqMessage);
     }
 
-    public event AsyncEventHandler<MessageReceivedEventArgs>? MessageReceived;
+    public async Task SendMessageAsync(MessagePair messages, long id, TgMessage? _)
+    {
+        await SendMessageAsync(Convert.ToUInt32(id), messages.Text!, messages.Media);
+    }
 
+    public event AsyncEventHandler<MessageReceivedEventArgs>? MessageReceived;
     public event AsyncEventHandler<PokedEventArgs>? Poked;
+    public event AsyncEventHandler<MembersAddedEventArgs>? MembersAdded;
+    public event AsyncEventHandler<MembersLeftEventArgs>? MembersLeft;
 
     private void RegisterEvents()
     {
@@ -59,6 +66,24 @@ public sealed class QqBot : IBot
 
             await Poked.Invoke(sender, new(this, args));
         };
+        _bot.Invoker.OnGroupMemberIncreaseEvent += async (sender, args) =>
+        {
+            if (MembersAdded is null)
+            {
+                return;
+            }
+
+            await MembersAdded.Invoke(sender, new(this, args));
+        };
+        _bot.Invoker.OnGroupMemberDecreaseEvent += async (sender, args) =>
+        {
+            if (MembersLeft is null)
+            {
+                return;
+            }
+
+            await MembersLeft.Invoke(sender, new(this, args));
+        };
     }
 
     public async Task RunAsync()
@@ -79,6 +104,12 @@ public sealed class QqBot : IBot
         }
 
         await _bot.LoginByPassword();
+    }
+
+
+    public async Task<BotUserInfo?> GetUserInfo(uint userId)
+    {
+        return await _bot.FetchUserInfo(userId);
     }
 
     private static BotDeviceInfo GetDeviceInfo()

@@ -11,6 +11,8 @@ public sealed class BotInstance(Config config)
 
     public static event AsyncEventHandler<MessageReceivedEventArgs>? MessageReceived;
     public static event AsyncEventHandler<PokedEventArgs>? Poked;
+    public static event AsyncEventHandler<MembersAddedEventArgs>? MembersAdded;
+    public static event AsyncEventHandler<MembersLeftEventArgs>? MembersLeft;
 
     private static void RegisterFunctions()
     {
@@ -21,6 +23,7 @@ public sealed class BotInstance(Config config)
         EatBreak eatBreak = new();
         Repeater repeater = new();
         Poke poke = new();
+        MemberChange memberChange = new();
 
         loveYou.Register();
         wannaCao.Register();
@@ -29,13 +32,19 @@ public sealed class BotInstance(Config config)
         eatBreak.Register();
         repeater.Register();
         poke.Register();
+        memberChange.Register();
     }
 
     private void RegisterEvents()
     {
         _qqBot.MessageReceived += MessageReceived;
         _qqBot.Poked += Poked;
+        _qqBot.MembersAdded += MembersAdded;
+        _qqBot.MembersLeft += MembersLeft;
+
         _tgBot.MessageReceived += MessageReceived;
+        _tgBot.MembersAdded += MembersAdded;
+        _tgBot.MembersLeft += MembersLeft;
     }
 
     public async Task RunAsync()

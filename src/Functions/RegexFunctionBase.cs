@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace DXKumaBot.Functions;
 
-public abstract class RegexFunctionBase
+public abstract class RegexFunctionBase : IFunction
 {
     public void Register()
     {

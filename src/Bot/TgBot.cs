@@ -1,3 +1,4 @@
+global using TgMessage = Telegram.Bot.Types.Message;
 using DXKumaBot.Bot.EventArg;
 using DXKumaBot.Bot.Message;
 using System.Net;
@@ -5,7 +6,6 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using File = System.IO.File;
-using TgMessage = Telegram.Bot.Types.Message;
 
 namespace DXKumaBot.Bot;
 
@@ -20,20 +20,48 @@ public sealed class TgBot(TelegramConfig config) : IBot
             noReply ? default : source.TgMessage);
     }
 
+    public async Task SendMessageAsync(MessagePair messages, long id, TgMessage? msg)
+    {
+        await SendMessageAsync(id, messages, msg!.MessageThreadId, msg);
+    }
+
     public event Utils.AsyncEventHandler<MessageReceivedEventArgs>? MessageReceived;
+    public event Utils.AsyncEventHandler<MembersAddedEventArgs>? MembersAdded;
+    public event Utils.AsyncEventHandler<MembersLeftEventArgs>? MembersLeft;
 
     public void Run()
     {
         _bot.StartReceiving(async (bot, update, _) =>
         {
-            if (update is not { Type: UpdateType.Message, Message: { Type: MessageType.Text, Text: not null } } ||
-                MessageReceived is null)
+            if (update is { Type: UpdateType.Message, Message: { Type: MessageType.Text, Text: not null } } &&
+                MessageReceived is not null)
             {
-                return;
+                await MessageReceived.Invoke(bot, new(this, update.Message));
             }
 
-            await MessageReceived.Invoke(bot, new(this, update.Message));
-        }, (_, e, _) => { Console.WriteLine(e); });
+            if (update is
+                {
+                    Type: UpdateType.Message, Message: { Type: MessageType.ChatMembersAdded, NewChatMembers: not null }
+                } &&
+                MembersAdded is not null)
+            {
+                await MembersAdded.Invoke(bot, new(this, update.Message));
+            }
+
+            if (update is
+                {
+                    Type: UpdateType.Message, Message: { Type: MessageType.ChatMemberLeft, LeftChatMember: not null }
+                } &&
+                MembersLeft is not null)
+            {
+                await MembersLeft.Invoke(bot, new(this, update.Message));
+            }
+        }, (_, e, _) =>
+        {
+#if DEBUG
+            Console.WriteLine(e);
+#endif
+        });
     }
 
     private async Task SendMessageAsync(long id, MessagePair messages, int? threadId = null, TgMessage? source = null)

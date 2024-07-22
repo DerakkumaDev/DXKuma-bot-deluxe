@@ -4,7 +4,7 @@ using DXKumaBot.Utils;
 
 namespace DXKumaBot.Functions;
 
-public sealed class Poke
+public sealed class Poke : IFunction
 {
     private readonly string[] _replies =
     [

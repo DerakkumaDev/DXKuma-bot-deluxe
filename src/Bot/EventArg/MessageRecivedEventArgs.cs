@@ -1,6 +1,5 @@
 using DXKumaBot.Bot.Message;
 using Lagrange.Core.Event.EventArg;
-using TgMessage = Telegram.Bot.Types.Message;
 
 namespace DXKumaBot.Bot.EventArg;
 
