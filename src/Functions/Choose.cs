@@ -9,7 +9,7 @@ public sealed partial class Choose : RegexFunctionBase
     protected override async Task Main(object? sender, MessageReceivedEventArgs args)
     {
         Match match = MessageRegex().Match(args.Text);
-        HashSet<string> values = [];
+        List<string> values = [];
         foreach (Group group in match.Groups)
         {
             if (group.Index is 0)
@@ -23,30 +23,24 @@ public sealed partial class Choose : RegexFunctionBase
             }
         }
 
-        switch (values.Count)
+        if (values.Count is 0)
         {
-            case 0:
-            {
-                string filePath = Path.Combine("Static", nameof(Choose), "1.png");
-                MediaMessage message = new(MediaType.Photo, filePath);
-                await args.Reply(new("没有选项要让迪拉熊怎么选嘛~", message));
-                break;
-            }
-            case 1:
-            {
-                string filePath = Path.Combine("Static", nameof(Choose), "1.png");
-                MediaMessage message = new(MediaType.Photo, filePath);
-                await args.Reply(new("就一个选项要让迪拉熊怎么选嘛~", message));
-                break;
-            }
-            default:
-            {
-                int index = Random.Shared.Next(values.Count);
-                string filePath = Path.Combine("Static", nameof(Choose), "0.png");
-                MediaMessage message = new(MediaType.Photo, filePath);
-                await args.Reply(new($"迪拉熊建议你选择“{values.ElementAt(index)}”呢~", message));
-                break;
-            }
+            string filePath = Path.Combine("Static", nameof(Choose), "1.png");
+            MediaMessage message = new(MediaType.Photo, filePath);
+            await args.Reply(new("没有选项要让迪拉熊怎么选嘛~", message));
+        }
+        else if (values.Count is 1 || values.All(x => x == values[0]))
+        {
+            string filePath = Path.Combine("Static", nameof(Choose), "1.png");
+            MediaMessage message = new(MediaType.Photo, filePath);
+            await args.Reply(new("就一个选项要让迪拉熊怎么选嘛~", message));
+        }
+        else
+        {
+            int index = Random.Shared.Next(values.Count);
+            string filePath = Path.Combine("Static", nameof(Choose), "0.png");
+            MediaMessage message = new(MediaType.Photo, filePath);
+            await args.Reply(new($"迪拉熊建议你选择“{values[index]}”呢~", message));
         }
     }
 
