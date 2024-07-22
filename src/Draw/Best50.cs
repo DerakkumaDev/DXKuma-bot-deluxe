@@ -18,7 +18,7 @@ public static class Best50
         (int X, int Y) b35Offset = (25, 795);
         (int X, int Y) pos = (0, 0);
 
-        foreach (CommonScore song in b50.Standard)
+        foreach (CommonScore song in b50.Standard!)
         {
             byte[] jacketImgBytes = await Resource.GetJacketAsync(song.Id);
             Image partImg = await Image.LoadAsync(Path.Combine("Static", "PartBase", $"{song.LevelIndex}.png"));

@@ -26,6 +26,7 @@ public class MessageReceivedEventArgs : EventArgs
 
     public async Task Reply(MessagePair messages)
     {
-        await _bot.SendMessageAsync(this, messages);
+        await _bot.SendMessageAsync(this, messages,
+            QqMessage is null ? TgMessage ?? throw new NullReferenceException() : QqMessage);
     }
 }

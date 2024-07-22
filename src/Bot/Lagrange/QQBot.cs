@@ -4,9 +4,11 @@ using Lagrange.Core;
 using Lagrange.Core.Common;
 using Lagrange.Core.Common.Interface;
 using Lagrange.Core.Common.Interface.Api;
+using Lagrange.Core.Event.EventArg;
 using Lagrange.Core.Message;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using TgMessage = Telegram.Bot.Types.Message;
 
 namespace DXKumaBot.Bot.Lagrange;
 
@@ -29,19 +31,23 @@ public class QqBot : IBot
         }, deviceInfo, _keyStore ?? new BotKeystore());
     }
 
-    public async Task SendMessageAsync(MessageReceivedEventArgs messageToReply, MessagePair messages)
+    public async Task SendMessageAsync(MessageReceivedEventArgs messageToReply, MessagePair messages,
+        Possible<GroupMessageEvent, TgMessage> source)
     {
-        await SendMessageAsync(messageToReply.QqMessage!.Chain.GroupUin, messages);
+        await SendMessageAsync(messageToReply.QqMessage!.Chain.GroupUin, messages.Text!, messages.Media,
+            ((GroupMessageEvent?)source)?.Chain);
     }
 
     public event AsyncEventHandler<MessageReceivedEventArgs>? MessageReceived;
 
     private void RegisterEvents()
     {
+#if DEBUG
         _bot.Invoker.OnBotCaptchaEvent += (_, @event) => { Console.WriteLine(@event.ToString()); };
         _bot.Invoker.OnBotOfflineEvent += (_, @event) => { Console.WriteLine(@event.ToString()); };
         _bot.Invoker.OnBotOnlineEvent += (_, @event) => { Console.WriteLine(@event.ToString()); };
         _bot.Invoker.OnBotNewDeviceVerify += (_, @event) => { Console.WriteLine(@event.ToString()); };
+#endif
         _bot.Invoker.OnGroupMessageReceived += async (sender, args) =>
         {
             if (MessageReceived is null)
@@ -113,7 +119,8 @@ public class QqBot : IBot
         });
     }
 
-    private async Task SendMessageAsync(uint? id, MessagePair messages)
+    private async Task SendMessageAsync(uint? id, string? text = null, MediaMessage? media = null,
+        MessageChain? source = null)
     {
         if (id is null)
         {
@@ -121,15 +128,20 @@ public class QqBot : IBot
         }
 
         MessageBuilder messageBuilder = MessageBuilder.Group((uint)id);
-        if (messages.Text is not null)
+        if (source is not null)
         {
-            messageBuilder.Text(messages.Text);
+            messageBuilder.Forward(source);
         }
 
-        if (messages.Media is not null)
+        if (text is not null)
         {
-            byte[] data = await File.ReadAllBytesAsync(messages.Media.Path);
-            switch (messages.Media.Type)
+            messageBuilder.Text(text);
+        }
+
+        if (media is not null)
+        {
+            byte[] data = await File.ReadAllBytesAsync(media.Path);
+            switch (media.Type)
             {
                 case MediaType.Audio:
                     messageBuilder.Record(data);
@@ -138,7 +150,7 @@ public class QqBot : IBot
                     messageBuilder.Image(data);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(messages));
+                    throw new ArgumentOutOfRangeException(nameof(media));
             }
         }
 

@@ -12,12 +12,12 @@ internal static class ByteExtension
         return Hex(bytes.AsSpan(), lower, space);
     }
 
-    public static string Hex(this Span<byte> bytes, bool lower = true, bool space = false)
+    private static string Hex(this Span<byte> bytes, bool lower = true, bool space = false)
     {
         return Hex((ReadOnlySpan<byte>)bytes, lower, space);
     }
 
-    public static string Hex(this ReadOnlySpan<byte> bytes, bool lower = true, bool space = false)
+    private static string Hex(this ReadOnlySpan<byte> bytes, bool lower = true, bool space = false)
     {
         return space
             ? HexInternal<WithSpaceHexByteStruct>(bytes, lower)
