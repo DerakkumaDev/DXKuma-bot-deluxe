@@ -53,7 +53,7 @@ public class TgBot(TelegramConfig config) : IBot
     {
         if (messages.Media is null)
         {
-            await _bot.SendTextMessageAsync(id, messages.Text!.Text, threadId, ParseMode.MarkdownV2,
+            await _bot.SendTextMessageAsync(id, messages.Text!.Text, threadId,
                 replyParameters: source is null ? default(ReplyParameters) : source);
             return;
         }
@@ -62,11 +62,11 @@ public class TgBot(TelegramConfig config) : IBot
         switch (messages.Media.Type)
         {
             case MediaType.Audio:
-                await _bot.SendAudioAsync(id, file, threadId, messages.Text?.Text, ParseMode.MarkdownV2,
+                await _bot.SendAudioAsync(id, file, threadId, messages.Text?.Text,
                     replyParameters: source is null ? default(ReplyParameters) : source);
                 break;
             case MediaType.Photo:
-                await _bot.SendPhotoAsync(id, file, threadId, messages.Text?.Text, ParseMode.MarkdownV2,
+                await _bot.SendPhotoAsync(id, file, threadId, messages.Text?.Text,
                     replyParameters: source is null ? default(ReplyParameters) : source);
                 break;
             default:

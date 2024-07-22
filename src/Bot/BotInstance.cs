@@ -15,7 +15,14 @@ public sealed class BotInstance(Config config)
     private static void RegisterFunctions()
     {
         LoveYou loveYou = new();
+        WannaCao wannaCao = new();
+        Cum cum = new();
+        Choose choose = new();
+
         loveYou.Register();
+        wannaCao.Register();
+        cum.Register();
+        choose.Register();
     }
 
     private void RegisterEvents()
