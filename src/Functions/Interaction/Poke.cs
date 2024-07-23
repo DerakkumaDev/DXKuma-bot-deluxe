@@ -3,7 +3,7 @@ using DXKumaBot.Bot.Message;
 using DXKumaBot.Utils;
 using System.Text.RegularExpressions;
 
-namespace DXKumaBot.Functions;
+namespace DXKumaBot.Functions.Interaction;
 
 public sealed partial class Poke : RegexFunctionBase
 {
@@ -31,13 +31,13 @@ public sealed partial class Poke : RegexFunctionBase
         }
 
         MessagePair messages = GetReplyMessages();
-        await args.Message.Reply(messages, true);
+        await args.Message.ReplyAsync(messages, true);
     }
 
     private protected override async Task MainAsync(object? sender, MessageReceivedEventArgs args)
     {
         MessagePair messages = GetReplyMessages();
-        await args.Message.Reply(messages);
+        await args.Message.ReplyAsync(messages);
     }
 
     private MessagePair GetReplyMessages()

@@ -3,7 +3,7 @@ using DXKumaBot.Bot.Message;
 using Lagrange.Core.Message.Entity;
 using System.Collections.Concurrent;
 
-namespace DXKumaBot.Functions;
+namespace DXKumaBot.Functions.Interaction;
 
 public sealed class Repeater
 {
@@ -11,8 +11,14 @@ public sealed class Repeater
 
     public async Task EntryAsync(object? sender, MessageReceivedEventArgs args)
     {
-        if (args.Message.SourceType is MessageSource.Qq && !args.Message.QqMessage!.All(x => x is TextEntity))
+        if (args.Message.SourceType is MessageSource.Qq)
         {
+            return;
+        }
+
+        if (!args.Message.QqMessage!.All(x => x is TextEntity))
+        {
+            _lastMessages.Remove(args.Message.ChatId, out _);
             return;
         }
 
@@ -31,7 +37,7 @@ public sealed class Repeater
         ++lastMessage.Times;
         if (lastMessage.Times is 3)
         {
-            await args.Message.Reply(new(args.Message.Text), true);
+            await args.Message.ReplyAsync(new(args.Message.Text), true);
         }
 
         _lastMessages[args.Message.ChatId] = lastMessage;

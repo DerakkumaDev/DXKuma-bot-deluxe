@@ -59,8 +59,20 @@ public sealed class BotMessage
         _ => throw new ArgumentOutOfRangeException(nameof(SourceType), SourceType, null)
     };
 
-    public async Task Reply(MessagePair messages, bool noReply = false)
+    public DateTime DateTime => SourceType switch
     {
-        await _bot.SendMessageAsync(messages, this, noReply);
+        MessageSource.Qq => QqMessage!.Time,
+        MessageSource.Telegram => TgMessage!.Date,
+        _ => throw new ArgumentOutOfRangeException(nameof(SourceType), SourceType, null)
+    };
+
+    public async Task<BotMessage> ReplyAsync(MessagePair messages, bool noReply = false)
+    {
+        return await _bot.SendMessageAsync(messages, this, noReply);
+    }
+
+    public async Task DeleteAsync()
+    {
+        await _bot.DeleteMessageAsync(this);
     }
 }

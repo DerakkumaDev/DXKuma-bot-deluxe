@@ -1,5 +1,6 @@
 using DXKumaBot.Bot.EventArg;
-using DXKumaBot.Functions;
+using DXKumaBot.Functions.Gallery;
+using DXKumaBot.Functions.Interaction;
 using DXKumaBot.Utils;
 
 namespace DXKumaBot.Bot;
@@ -25,6 +26,8 @@ public sealed class BotInstance(Config config)
         Poke poke = new();
         MemberChange memberChange = new();
         Help help = new();
+        Pick pick = new();
+        PickNsfw pickNsfw = new();
 
         MessageReceived += loveYou.EntryAsync;
         MessageReceived += wannaCao.EntryAsync;
@@ -37,6 +40,8 @@ public sealed class BotInstance(Config config)
         MembersAdded += memberChange.JoinEntryAsync;
         MembersLeft += memberChange.LeftEntryAsync;
         MessageReceived += help.EntryAsync;
+        MessageReceived += pick.EntryAsync;
+        MessageReceived += pickNsfw.EntryAsync;
     }
 
     private void RegisterEvents()

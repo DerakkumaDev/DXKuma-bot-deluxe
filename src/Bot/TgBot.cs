@@ -17,15 +17,21 @@ public sealed class TgBot(TelegramConfig config) : IBot
     private string? _userName;
     public string UserName => _userName ??= _bot.GetMeAsync().Result.Username!;
 
-    public async Task SendMessageAsync(MessagePair messages, BotMessage source, bool noReply)
+    public async Task<BotMessage> SendMessageAsync(MessagePair messages, BotMessage source, bool noReply)
     {
-        await SendMessageAsync(source.ChatId, messages, source.TgMessage?.MessageThreadId,
-            noReply ? default : source.TgMessage);
+        return new(this,
+            await SendMessageAsync(source.ChatId, messages, source.TgMessage?.MessageThreadId,
+                noReply ? default : source.TgMessage));
     }
 
     public async Task SendMessageAsync(MessagePair messages, long id, TgMessage? msg)
     {
         await SendMessageAsync(id, messages, msg!.MessageThreadId, msg);
+    }
+
+    public async Task DeleteMessageAsync(BotMessage message)
+    {
+        await _bot.DeleteMessageAsync(message.TgMessage!.Chat.Id, message.TgMessage.MessageId);
     }
 
     public event Utils.AsyncEventHandler<MessageReceivedEventArgs>? MessageReceived;
@@ -63,28 +69,23 @@ public sealed class TgBot(TelegramConfig config) : IBot
         };
     }
 
-    private async Task SendMessageAsync(long id, MessagePair messages, int? threadId = null, TgMessage? source = null)
+    private async Task<TgMessage> SendMessageAsync(long id, MessagePair messages, int? threadId = null,
+        TgMessage? source = null)
     {
         if (messages.Media is null)
         {
-            await _bot.SendTextMessageAsync(id, messages.Text!.Text, threadId,
+            return await _bot.SendTextMessageAsync(id, messages.Text!.Text, threadId,
                 replyParameters: source is null ? default(ReplyParameters?) : source);
-            return;
         }
 
         InputFile file = InputFile.FromStream(File.OpenRead(messages.Media.Path));
-        switch (messages.Media.Type)
+        return messages.Media.Type switch
         {
-            case MediaType.Audio:
-                await _bot.SendAudioAsync(id, file, threadId, messages.Text?.Text,
-                    replyParameters: source is null ? default(ReplyParameters?) : source);
-                break;
-            case MediaType.Photo:
-                await _bot.SendPhotoAsync(id, file, threadId, messages.Text?.Text,
-                    replyParameters: source is null ? default(ReplyParameters?) : source);
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(messages));
-        }
+            MediaType.Audio => await _bot.SendAudioAsync(id, file, threadId, messages.Text?.Text,
+                replyParameters: source is null ? default(ReplyParameters?) : source),
+            MediaType.Photo => await _bot.SendPhotoAsync(id, file, threadId, messages.Text?.Text,
+                replyParameters: source is null ? default(ReplyParameters?) : source),
+            _ => throw new ArgumentOutOfRangeException(nameof(messages))
+        };
     }
 }

@@ -3,7 +3,7 @@ using DXKumaBot.Bot.Message;
 using DXKumaBot.Utils;
 using System.Text.RegularExpressions;
 
-namespace DXKumaBot.Functions;
+namespace DXKumaBot.Functions.Interaction;
 
 public sealed partial class WannaCao : RegexFunctionBase
 {
@@ -29,7 +29,7 @@ public sealed partial class WannaCao : RegexFunctionBase
         (string Text, int PhotoIndex) reply = _replies[index];
         string filePath = Path.Combine("Static", nameof(WannaCao), $"{reply.PhotoIndex}.png");
         MediaMessage message = new(MediaType.Photo, filePath);
-        await args.Message.Reply(new(reply.Text, message));
+        await args.Message.ReplyAsync(new(reply.Text, message), true);
     }
 
     [GeneratedRegex("(香草|想草)(迪拉熊|dlx)", RegexOptions.IgnoreCase | RegexOptions.Singleline)]

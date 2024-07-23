@@ -24,15 +24,24 @@ public sealed class QqBot : IBot
 
     public uint Id => _bot.BotUin;
 
-    public async Task SendMessageAsync(MessagePair messages, BotMessage source, bool noReply)
+    public async Task<BotMessage> SendMessageAsync(MessagePair messages, BotMessage source, bool noReply)
     {
-        await SendMessageAsync(Convert.ToUInt32(source.ChatId), messages.Text!, messages.Media,
-            noReply ? default : source.QqMessage);
+        return new(this,
+            (await SendMessageAsync(Convert.ToUInt32(source.ChatId), messages.Text!, messages.Media,
+                noReply ? default : source.QqMessage))!);
     }
 
     public async Task SendMessageAsync(MessagePair messages, long id, TgMessage? _)
     {
         await SendMessageAsync(Convert.ToUInt32(id), messages.Text!, messages.Media);
+    }
+
+    public async Task DeleteMessageAsync(BotMessage message)
+    {
+        if (!await _bot.RecallGroupMessage(message.QqMessage!))
+        {
+            throw new OperationCanceledException();
+        }
     }
 
     public event AsyncEventHandler<MessageReceivedEventArgs>? MessageReceived;
@@ -60,7 +69,7 @@ public sealed class QqBot : IBot
         await _bot.LoginByPassword();
     }
 
-    public async Task<BotUserInfo?> GetUserInfo(uint userId)
+    public async Task<BotUserInfo?> GetUserInfoAsync(uint userId)
     {
         return await _bot.FetchUserInfo(userId);
     }
@@ -111,7 +120,7 @@ public sealed class QqBot : IBot
         };
     }
 
-    private async Task SendMessageAsync(uint? id, string? text = null, MediaMessage? media = null,
+    private async Task<MessageChain?> SendMessageAsync(uint? id, string? text = null, MediaMessage? media = null,
         MessageChain? source = null)
     {
         if (id is null)
@@ -146,6 +155,9 @@ public sealed class QqBot : IBot
             }
         }
 
-        await _bot.SendMessage(messageBuilder.Build());
+        MessageResult replyResult = await _bot.SendMessage(messageBuilder.Build());
+        List<MessageChain>? replyMessages =
+            await _bot.GetGroupMessage(id.Value, replyResult.Sequence!.Value, replyResult.Sequence.Value);
+        return replyMessages?.Count is 1 ? replyMessages[0] : default;
     }
 }

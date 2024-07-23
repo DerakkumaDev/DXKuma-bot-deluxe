@@ -2,7 +2,7 @@ using DXKumaBot.Bot.EventArg;
 using DXKumaBot.Bot.Message;
 using System.Text.RegularExpressions;
 
-namespace DXKumaBot.Functions;
+namespace DXKumaBot.Functions.Interaction;
 
 public sealed partial class Help : RegexFunctionBase
 {
@@ -12,11 +12,11 @@ public sealed partial class Help : RegexFunctionBase
         MediaMessage message = new(MediaType.Photo, filePath);
         if (args.Message.SourceType is MessageSource.Qq)
         {
-            await args.Message.Reply(new("迪拉熊测试群：959231211", message));
+            await args.Message.ReplyAsync(new("迪拉熊测试群：959231211", message));
             return;
         }
 
-        await args.Message.Reply(message);
+        await args.Message.ReplyAsync(message);
     }
 
     [GeneratedRegex("^((迪拉熊|dlx)(help|指令|帮助)|指令大全)$", RegexOptions.IgnoreCase | RegexOptions.Singleline)]

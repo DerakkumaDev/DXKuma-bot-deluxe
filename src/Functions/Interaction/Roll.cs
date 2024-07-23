@@ -2,7 +2,7 @@ using DXKumaBot.Bot.EventArg;
 using DXKumaBot.Bot.Message;
 using System.Text.RegularExpressions;
 
-namespace DXKumaBot.Functions;
+namespace DXKumaBot.Functions.Interaction;
 
 public sealed partial class Roll
 {
@@ -37,14 +37,14 @@ public sealed partial class Roll
         {
             string filePath = Path.Combine("Static", nameof(Roll), "1.png");
             MediaMessage message = new(MediaType.Photo, filePath);
-            await args.Message.Reply(new("就一个选项要让迪拉熊怎么选嘛~", message));
+            await args.Message.ReplyAsync(new("就一个选项要让迪拉熊怎么选嘛~", message));
         }
         else
         {
             int index = Random.Shared.Next(values.Count);
             string filePath = Path.Combine("Static", nameof(Roll), "0.png");
             MediaMessage message = new(MediaType.Photo, filePath);
-            await args.Message.Reply(new($"迪拉熊建议你选择“{values[index]}”呢~", message));
+            await args.Message.ReplyAsync(new($"迪拉熊建议你选择“{values[index]}”呢~", message));
         }
     }
 

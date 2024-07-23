@@ -34,12 +34,12 @@ public class MembersLeftEventArgs : EventArgs
 
     public string UserName => SourceType switch
     {
-        MessageSource.Qq => ((QqBot)_bot).GetUserInfo(QqMessage!.MemberUin).Result!.Nickname,
+        MessageSource.Qq => ((QqBot)_bot).GetUserInfoAsync(QqMessage!.MemberUin).Result!.Nickname,
         MessageSource.Telegram => $"{TgMessage!.LeftChatMember!.FirstName}{TgMessage!.LeftChatMember!.LastName}",
         _ => throw new ArgumentOutOfRangeException(nameof(SourceType), SourceType, null)
     };
 
-    public async Task Reply(MessagePair messages)
+    public async Task ReplyAsync(MessagePair messages)
     {
         await _bot.SendMessageAsync(messages, SourceType switch
         {
