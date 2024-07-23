@@ -28,7 +28,7 @@ public sealed partial class LoveYou
         await args.Message.ReplyAsync(new("迪拉熊也喜欢你❤️", message));
     }
 
-    [GeneratedRegex("(迪拉熊|dlx)我喜欢你", RegexOptions.IgnoreCase | RegexOptions.Singleline)]
+    [GeneratedRegex("^(迪拉熊|dlx)我喜欢你$", RegexOptions.IgnoreCase | RegexOptions.Singleline)]
     private partial Regex MessageRegex();
 
     [GeneratedRegex("我喜欢你", RegexOptions.IgnoreCase | RegexOptions.Singleline)]

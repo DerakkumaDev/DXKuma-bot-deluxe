@@ -30,7 +30,7 @@ public sealed partial class PickNsfw : RegexFunctionBase
 
             while (queue.TryPeek(out DateTime dateTime))
             {
-                if (args.Message.DateTime - dateTime <= TimeSpan.FromMinutes(1))
+                if (args.Message.DateTime - dateTime < TimeSpan.FromMinutes(1))
                 {
                     break;
                 }

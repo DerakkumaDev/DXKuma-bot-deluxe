@@ -32,6 +32,6 @@ public sealed partial class WannaCao : RegexFunctionBase
         await args.Message.ReplyAsync(new(reply.Text, message), true);
     }
 
-    [GeneratedRegex("(香草|想草)(迪拉熊|dlx)", RegexOptions.IgnoreCase | RegexOptions.Singleline)]
+    [GeneratedRegex("^(香草|想草)(迪拉熊|dlx)$", RegexOptions.IgnoreCase | RegexOptions.Singleline)]
     private protected override partial Regex MessageRegex();
 }
