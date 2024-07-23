@@ -8,7 +8,12 @@ public sealed partial class Roll
 {
     public async Task EntryAsync(object? sender, MessageReceivedEventArgs args)
     {
-        if (string.IsNullOrEmpty(args.Message.Text) || !args.Message.ToBot)
+        if (string.IsNullOrEmpty(args.Message.Text))
+        {
+            return;
+        }
+
+        if (!args.Message.ToBot)
         {
             return;
         }

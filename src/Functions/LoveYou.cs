@@ -8,8 +8,12 @@ public sealed partial class LoveYou
 {
     public async Task EntryAsync(object? sender, MessageReceivedEventArgs args)
     {
-        if (string.IsNullOrEmpty(args.Message.Text) ||
-            (!args.Message.ToBot || !MessageToBotRegex().IsMatch(args.Message.Text)) &&
+        if (string.IsNullOrEmpty(args.Message.Text))
+        {
+            return;
+        }
+
+        if ((!args.Message.ToBot || !MessageToBotRegex().IsMatch(args.Message.Text)) &&
             !MessageRegex().IsMatch(args.Message.Text))
         {
             return;

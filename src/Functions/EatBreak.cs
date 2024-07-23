@@ -8,8 +8,17 @@ public sealed partial class EatBreak
 {
     public async Task EntryAsync(object? sender, MessageReceivedEventArgs args)
     {
-        if (string.IsNullOrEmpty(args.Message.Text) || !args.Message.ToBot ||
-            !MessageRegex().IsMatch(args.Message.Text))
+        if (string.IsNullOrEmpty(args.Message.Text))
+        {
+            return;
+        }
+
+        if (!args.Message.ToBot)
+        {
+            return;
+        }
+
+        if (!MessageRegex().IsMatch(args.Message.Text))
         {
             return;
         }
