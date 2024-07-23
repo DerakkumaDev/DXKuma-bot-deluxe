@@ -20,31 +20,31 @@ public static class Resource
         s_db = new("Cache.db");
     }
 
-    private static Task<bool> CheckAvailableCacheAsync(string type, int id)
+    private static bool CheckAvailableCache(string type, int id)
     {
         string path = Path.Combine(type, $"{id}.png");
         string fullPath = Path.Combine(CacheDirPath, path);
         if (!File.Exists(fullPath))
         {
-            return Task.FromResult(false);
+            return false;
         }
 
         ILiteCollection<Cache> col = s_db.GetCollection<Cache>(type);
         Cache cache = col.FindById(id);
         if (cache is not null && DateTime.UtcNow - cache.CacheTime < TimeSpan.FromDays(1))
         {
-            return Task.FromResult(true);
+            return true;
         }
 
         File.Delete(fullPath);
-        return Task.FromResult(false);
+        return false;
     }
 
     private static async Task<byte[]> GetAsync(string type, int id)
     {
         string dirPath = Path.Combine(CacheDirPath, type);
         string path = Path.Combine(dirPath, $"{id}.png");
-        if (await CheckAvailableCacheAsync(type, id))
+        if (CheckAvailableCache(type, id))
         {
             return await File.ReadAllBytesAsync(path);
         }

@@ -38,10 +38,12 @@ public sealed class QqBot : IBot
 
     public async Task DeleteMessageAsync(BotMessage message)
     {
-        if (!await _bot.RecallGroupMessage(message.QqMessage!))
+        if (await _bot.RecallGroupMessage(message.QqMessage!))
         {
-            throw new OperationCanceledException();
+            return;
         }
+
+        throw new OperationCanceledException();
     }
 
     public event AsyncEventHandler<MessageReceivedEventArgs>? MessageReceived;
