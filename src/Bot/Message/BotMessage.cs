@@ -1,5 +1,6 @@
 using Lagrange.Core.Message;
 using Lagrange.Core.Message.Entity;
+using Telegram.Bot.Types.Enums;
 
 namespace DXKumaBot.Bot.Message;
 
@@ -44,6 +45,14 @@ public sealed class BotMessage
     {
         MessageSource.Qq => QqMessage!.GroupUin!.Value,
         MessageSource.Telegram => TgMessage!.Chat.Id,
+        _ => throw new ArgumentOutOfRangeException(nameof(SourceType), SourceType, null)
+    };
+
+    public bool ToBot => SourceType switch
+    {
+        MessageSource.Qq => QqMessage!.TargetUin == _bot.Id,
+        MessageSource.Telegram => TgMessage!.Entities!.Any(x =>
+            x.Type is MessageEntityType.Mention && x.User!.Id == _bot.Id),
         _ => throw new ArgumentOutOfRangeException(nameof(SourceType), SourceType, null)
     };
 

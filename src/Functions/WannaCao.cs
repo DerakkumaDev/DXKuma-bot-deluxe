@@ -23,7 +23,7 @@ public sealed partial class WannaCao : RegexFunctionBase
 
     private readonly int[] _weights = [11, 11, 11, 11, 11, 11, 11, 11, 11, 1];
 
-    private protected override async Task Main(object? sender, MessageReceivedEventArgs args)
+    private protected override async Task MainAsync(object? sender, MessageReceivedEventArgs args)
     {
         int index = Random.Shared.Choose(_weights);
         (string Text, int PhotoIndex) reply = _replies[index];

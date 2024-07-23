@@ -7,7 +7,7 @@ namespace DXKumaBot.Functions;
 
 public sealed partial class Cum : RegexFunctionBase
 {
-    private protected override async Task Main(object? sender, MessageReceivedEventArgs args)
+    private protected override async Task MainAsync(object? sender, MessageReceivedEventArgs args)
     {
         int index = Random.Shared.Choose([9, 1]);
         string filePath = Path.Combine("Static", nameof(Cum), $"{index}.png");

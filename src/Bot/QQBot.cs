@@ -24,6 +24,8 @@ public sealed class QqBot : IBot
         _bot = BotFactory.Create(new(), deviceInfo, _keyStore ?? new BotKeystore());
     }
 
+    public long Id => _bot.BotUin;
+
     public async Task SendMessageAsync(MessagePair messages, BotMessage source, bool noReply)
     {
         await SendMessageAsync(Convert.ToUInt32(source.ChatId), messages.Text!, messages.Media,

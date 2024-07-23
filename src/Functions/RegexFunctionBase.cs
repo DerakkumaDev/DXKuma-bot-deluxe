@@ -12,10 +12,10 @@ public abstract class RegexFunctionBase
             return;
         }
 
-        await Main(sender, args);
+        await MainAsync(sender, args);
     }
 
-    private protected abstract Task Main(object? sender, MessageReceivedEventArgs args);
+    private protected abstract Task MainAsync(object? sender, MessageReceivedEventArgs args);
 
     private protected abstract Regex MessageRegex();
 }

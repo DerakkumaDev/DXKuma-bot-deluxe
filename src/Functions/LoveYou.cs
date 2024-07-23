@@ -6,7 +6,7 @@ namespace DXKumaBot.Functions;
 
 public sealed partial class LoveYou : RegexFunctionBase
 {
-    private protected override async Task Main(object? sender, MessageReceivedEventArgs args)
+    private protected override async Task MainAsync(object? sender, MessageReceivedEventArgs args)
     {
         string filePath = Path.Combine("Static", nameof(LoveYou), "0.png");
         MediaMessage message = new(MediaType.Photo, filePath);

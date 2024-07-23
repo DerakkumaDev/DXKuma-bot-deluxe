@@ -1,10 +1,11 @@
 using DXKumaBot.Bot.EventArg;
 using DXKumaBot.Bot.Message;
 using DXKumaBot.Utils;
+using System.Text.RegularExpressions;
 
 namespace DXKumaBot.Functions;
 
-public sealed class Poke
+public sealed partial class Poke : RegexFunctionBase
 {
     private readonly string[] _replies =
     [
@@ -22,13 +23,32 @@ public sealed class Poke
 
     private readonly int[] _weights = [9, 9, 9, 9, 9, 9, 9, 9, 4, 4];
 
+    public async Task QqEntryAsync(object? sender, PokedEventArgs args)
+    {
+        if (!args.Message.ToBot)
+        {
+            return;
+        }
 
-    public async Task EntryAsync(object? sender, PokedEventArgs args)
+        MessagePair messages = GetReplyMessages();
+        await args.Message.Reply(messages, true);
+    }
+
+    private protected override async Task MainAsync(object? sender, MessageReceivedEventArgs args)
+    {
+        MessagePair messages = GetReplyMessages();
+        await args.Message.Reply(messages);
+    }
+
+    private MessagePair GetReplyMessages()
     {
         int index = Random.Shared.Choose(_weights);
         string reply = _replies[index];
         string filePath = Path.Combine("Static", nameof(Poke), $"{index}.png");
         MediaMessage message = new(MediaType.Photo, filePath);
-        await args.Message.Reply(new(reply, message));
+        return new(reply, message);
     }
+
+    [GeneratedRegex("^戳屁(屁|股)$", RegexOptions.IgnoreCase | RegexOptions.Singleline)]
+    private protected override partial Regex MessageRegex();
 }

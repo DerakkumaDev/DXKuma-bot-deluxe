@@ -24,6 +24,7 @@ public sealed class BotInstance(Config config)
         Repeater repeater = new();
         Poke poke = new();
         MemberChange memberChange = new();
+        Help help = new();
 
         MessageReceived += loveYou.EntryAsync;
         MessageReceived += wannaCao.EntryAsync;
@@ -31,9 +32,11 @@ public sealed class BotInstance(Config config)
         MessageReceived += roll.EntryAsync;
         MessageReceived += eatBreak.EntryAsync;
         MessageReceived += repeater.EntryAsync;
-        Poked += poke.EntryAsync;
+        Poked += poke.QqEntryAsync;
+        MessageReceived += poke.EntryAsync;
         MembersAdded += memberChange.JoinEntryAsync;
         MembersLeft += memberChange.LeftEntryAsync;
+        MessageReceived += help.EntryAsync;
     }
 
     private void RegisterEvents()
