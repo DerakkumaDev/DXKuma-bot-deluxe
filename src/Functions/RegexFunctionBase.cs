@@ -1,22 +1,18 @@
-using DXKumaBot.Bot;
 using DXKumaBot.Bot.EventArg;
 using System.Text.RegularExpressions;
 
 namespace DXKumaBot.Functions;
 
-public abstract class RegexFunctionBase : IFunction
+public abstract class RegexFunctionBase
 {
-    public void Register()
+    public async Task EntryAsync(object? sender, MessageReceivedEventArgs args)
     {
-        BotInstance.MessageReceived += async (sender, args) =>
+        if (string.IsNullOrEmpty(args.Message.Text) || !MessageRegex().IsMatch(args.Message.Text))
         {
-            if (!MessageRegex().IsMatch(args.Message.Text))
-            {
-                return;
-            }
+            return;
+        }
 
-            await Main(sender, args);
-        };
+        await Main(sender, args);
     }
 
     private protected abstract Task Main(object? sender, MessageReceivedEventArgs args);

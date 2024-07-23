@@ -8,6 +8,11 @@ public sealed partial class Roll : RegexFunctionBase
 {
     private protected override async Task Main(object? sender, MessageReceivedEventArgs args)
     {
+        if (string.IsNullOrEmpty(args.Message.Text))
+        {
+            return;
+        }
+
         MatchCollection matches = MessageRegex().Matches(args.Message.Text);
         List<string> values = [];
         foreach (Match match in matches)

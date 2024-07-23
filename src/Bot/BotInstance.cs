@@ -9,12 +9,12 @@ public sealed class BotInstance(Config config)
     private readonly QqBot _qqBot = new();
     private readonly TgBot _tgBot = new(config.Telegram);
 
-    public static event AsyncEventHandler<MessageReceivedEventArgs>? MessageReceived;
-    public static event AsyncEventHandler<PokedEventArgs>? Poked;
-    public static event AsyncEventHandler<MembersAddedEventArgs>? MembersAdded;
-    public static event AsyncEventHandler<MembersLeftEventArgs>? MembersLeft;
+    public event AsyncEventHandler<MessageReceivedEventArgs>? MessageReceived;
+    public event AsyncEventHandler<PokedEventArgs>? Poked;
+    public event AsyncEventHandler<MembersAddedEventArgs>? MembersAdded;
+    public event AsyncEventHandler<MembersLeftEventArgs>? MembersLeft;
 
-    private static void RegisterFunctions()
+    private void RegisterFunctions()
     {
         LoveYou loveYou = new();
         WannaCao wannaCao = new();
@@ -25,14 +25,15 @@ public sealed class BotInstance(Config config)
         Poke poke = new();
         MemberChange memberChange = new();
 
-        loveYou.Register();
-        wannaCao.Register();
-        cum.Register();
-        roll.Register();
-        eatBreak.Register();
-        repeater.Register();
-        poke.Register();
-        memberChange.Register();
+        MessageReceived += loveYou.EntryAsync;
+        MessageReceived += wannaCao.EntryAsync;
+        MessageReceived += cum.EntryAsync;
+        MessageReceived += roll.EntryAsync;
+        MessageReceived += eatBreak.EntryAsync;
+        MessageReceived += repeater.EntryAsync;
+        Poked += poke.EntryAsync;
+        MembersAdded += memberChange.JoinEntryAsync;
+        MembersLeft += memberChange.LeftEntryAsync;
     }
 
     private void RegisterEvents()

@@ -1,4 +1,5 @@
 using Lagrange.Core.Message;
+using Lagrange.Core.Message.Entity;
 
 namespace DXKumaBot.Bot.Message;
 
@@ -32,19 +33,19 @@ public sealed class BotMessage
     public TgMessage? TgMessage { get; }
     public MessageSource SourceType { get; }
 
-    public string Text => SourceType switch
+    public string? Text => SourceType switch
     {
-        MessageSource.Qq => QqMessage?.ToPreviewText(),
-        MessageSource.Telegram => TgMessage?.Text,
+        MessageSource.Qq => QqMessage!.GetEntity<TextEntity>()?.Text,
+        MessageSource.Telegram => TgMessage!.Text,
         _ => throw new ArgumentOutOfRangeException(nameof(SourceType), SourceType, null)
-    } ?? throw new NullReferenceException();
+    };
 
     public long ChatId => _groupId ?? SourceType switch
     {
-        MessageSource.Qq => QqMessage?.GroupUin,
-        MessageSource.Telegram => TgMessage?.Chat.Id,
+        MessageSource.Qq => QqMessage!.GroupUin!.Value,
+        MessageSource.Telegram => TgMessage!.Chat.Id,
         _ => throw new ArgumentOutOfRangeException(nameof(SourceType), SourceType, null)
-    } ?? throw new NullReferenceException();
+    };
 
     public async Task Reply(MessagePair messages, bool noReply = false)
     {

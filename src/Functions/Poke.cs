@@ -1,10 +1,10 @@
-using DXKumaBot.Bot;
+using DXKumaBot.Bot.EventArg;
 using DXKumaBot.Bot.Message;
 using DXKumaBot.Utils;
 
 namespace DXKumaBot.Functions;
 
-public sealed class Poke : IFunction
+public sealed class Poke
 {
     private readonly string[] _replies =
     [
@@ -23,15 +23,12 @@ public sealed class Poke : IFunction
     private readonly int[] _weights = [9, 9, 9, 9, 9, 9, 9, 9, 4, 4];
 
 
-    public void Register()
+    public async Task EntryAsync(object? sender, PokedEventArgs args)
     {
-        BotInstance.Poked += async (_, args) =>
-        {
-            int index = Random.Shared.Choose(_weights);
-            string reply = _replies[index];
-            string filePath = Path.Combine("Static", nameof(Poke), $"{index}.png");
-            MediaMessage message = new(MediaType.Photo, filePath);
-            await args.Message.Reply(new(reply, message));
-        };
+        int index = Random.Shared.Choose(_weights);
+        string reply = _replies[index];
+        string filePath = Path.Combine("Static", nameof(Poke), $"{index}.png");
+        MediaMessage message = new(MediaType.Photo, filePath);
+        await args.Message.Reply(new(reply, message));
     }
 }

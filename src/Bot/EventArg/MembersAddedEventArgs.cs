@@ -34,7 +34,7 @@ public class MembersAddedEventArgs : EventArgs
 
     public long UserId => SourceType switch
     {
-        MessageSource.Qq => QqMessage!.GroupUin,
+        MessageSource.Qq => QqMessage!.MemberUin,
         MessageSource.Telegram => throw new NotSupportedException(),
         _ => throw new ArgumentOutOfRangeException(nameof(SourceType), SourceType, null)
     };

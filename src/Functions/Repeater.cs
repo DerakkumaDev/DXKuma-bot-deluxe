@@ -1,35 +1,39 @@
-using DXKumaBot.Bot;
+using DXKumaBot.Bot.EventArg;
+using DXKumaBot.Bot.Message;
+using Lagrange.Core.Message.Entity;
 using System.Collections.Concurrent;
 
 namespace DXKumaBot.Functions;
 
-public sealed class Repeater : IFunction
+public sealed class Repeater
 {
     private readonly ConcurrentDictionary<long, (string, int)> _lastMessages = new();
 
-    public void Register()
+    public async Task EntryAsync(object? sender, MessageReceivedEventArgs args)
     {
-        BotInstance.MessageReceived += async (_, args) =>
+        if (args.Message.SourceType is MessageSource.Qq && !args.Message.QqMessage!.All(x => x is TextEntity))
         {
-            if (!_lastMessages.TryGetValue(args.Message.ChatId, out (string Text, int Times) lastMessage) ||
-                lastMessage.Text != args.Message.Text)
-            {
-                _lastMessages[args.Message.ChatId] = (args.Message.Text, 1);
-                return;
-            }
+            return;
+        }
 
-            if (lastMessage.Times > 2)
-            {
-                return;
-            }
+        if (!_lastMessages.TryGetValue(args.Message.ChatId, out (string Text, int Times) lastMessage) ||
+            lastMessage.Text != args.Message.Text)
+        {
+            _lastMessages[args.Message.ChatId] = (args.Message.Text!, 1);
+            return;
+        }
 
-            ++lastMessage.Times;
-            if (lastMessage.Times is 3)
-            {
-                await args.Message.Reply(new(args.Message.Text), true);
-            }
+        if (lastMessage.Times > 2)
+        {
+            return;
+        }
 
-            _lastMessages[args.Message.ChatId] = lastMessage;
-        };
+        ++lastMessage.Times;
+        if (lastMessage.Times is 3)
+        {
+            await args.Message.Reply(new(args.Message.Text), true);
+        }
+
+        _lastMessages[args.Message.ChatId] = lastMessage;
     }
 }
