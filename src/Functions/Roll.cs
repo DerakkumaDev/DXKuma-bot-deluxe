@@ -4,9 +4,9 @@ using System.Text.RegularExpressions;
 
 namespace DXKumaBot.Functions;
 
-public sealed partial class Roll : RegexFunctionBase
+public sealed partial class Roll
 {
-    private protected override async Task MainAsync(object? sender, MessageReceivedEventArgs args)
+    public async Task EntryAsync(object? sender, MessageReceivedEventArgs args)
     {
         if (string.IsNullOrEmpty(args.Message.Text) || !args.Message.ToBot)
         {
@@ -33,11 +33,10 @@ public sealed partial class Roll : RegexFunctionBase
 
         if (values.Count is 0)
         {
-            string filePath = Path.Combine("Static", nameof(Roll), "1.png");
-            MediaMessage message = new(MediaType.Photo, filePath);
-            await args.Message.Reply(new("没有选项要让迪拉熊怎么选嘛~", message));
+            return;
         }
-        else if (values.Count is 1 || values.All(x => x == values[0]))
+
+        if (values.Count is 1 || values.All(x => x == values[0]))
         {
             string filePath = Path.Combine("Static", nameof(Roll), "1.png");
             MediaMessage message = new(MediaType.Photo, filePath);
@@ -54,5 +53,5 @@ public sealed partial class Roll : RegexFunctionBase
 
     [GeneratedRegex("(?:.*?是)(.+?)(?:还是(.+?))+",
         RegexOptions.IgnoreCase | RegexOptions.Singleline)]
-    private protected override partial Regex MessageRegex();
+    private partial Regex MessageRegex();
 }
