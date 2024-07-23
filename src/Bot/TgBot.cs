@@ -33,37 +33,33 @@ public sealed class TgBot(TelegramConfig config) : IBot
 
     public void Run()
     {
-        _bot.StartReceiving(async (bot, update, _) =>
-        {
-            if (update is { Type: UpdateType.Message, Message: { Type: MessageType.Text, Text: not null } } &&
-                MessageReceived is not null)
-            {
-                await MessageReceived.Invoke(bot, new(this, update.Message));
-            }
-
-            if (update is
-                {
-                    Type: UpdateType.Message, Message: { Type: MessageType.ChatMembersAdded, NewChatMembers: not null }
-                } &&
-                MembersAdded is not null)
-            {
-                await MembersAdded.Invoke(bot, new(this, update.Message));
-            }
-
-            if (update is
-                {
-                    Type: UpdateType.Message, Message: { Type: MessageType.ChatMemberLeft, LeftChatMember: not null }
-                } &&
-                MembersLeft is not null)
-            {
-                await MembersLeft.Invoke(bot, new(this, update.Message));
-            }
-        }, (_, e, _) =>
-        {
 #if DEBUG
+        _bot.OnError += (e, _) =>
+        {
             Console.WriteLine(e);
+            return Task.CompletedTask;
+        };
 #endif
-        });
+        _bot.OnMessage += async (message, type) =>
+        {
+            if (type is not UpdateType.Message)
+            {
+                return;
+            }
+
+            switch (message)
+            {
+                case { Type: MessageType.Text, Text: not null } when MessageReceived is not null:
+                    await MessageReceived.Invoke(_bot, new(this, message));
+                    return;
+                case { Type: MessageType.ChatMembersAdded, NewChatMembers: not null } when MembersAdded is not null:
+                    await MembersAdded.Invoke(_bot, new(this, message));
+                    return;
+                case { Type: MessageType.ChatMemberLeft, LeftChatMember: not null } when MembersLeft is not null:
+                    await MembersLeft.Invoke(_bot, new(this, message));
+                    break;
+            }
+        };
     }
 
     private async Task SendMessageAsync(long id, MessagePair messages, int? threadId = null, TgMessage? source = null)

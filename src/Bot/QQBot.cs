@@ -108,7 +108,6 @@ public sealed class QqBot : IBot
         await _bot.LoginByPassword();
     }
 
-
     public async Task<BotUserInfo?> GetUserInfo(uint userId)
     {
         return await _bot.FetchUserInfo(userId);

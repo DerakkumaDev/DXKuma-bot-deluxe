@@ -8,6 +8,7 @@ public sealed class BotMessage
 {
     private readonly IBot _bot;
     private readonly uint? _groupId;
+    private readonly uint? _targetId;
 
     public BotMessage(IBot bot, MessageChain message)
     {
@@ -16,10 +17,11 @@ public sealed class BotMessage
         SourceType = MessageSource.Qq;
     }
 
-    public BotMessage(IBot bot, uint groupId)
+    public BotMessage(IBot bot, uint groupId, uint targetId)
     {
         _bot = bot;
         _groupId = groupId;
+        _targetId = targetId;
         SourceType = MessageSource.Qq;
     }
 
@@ -41,16 +43,16 @@ public sealed class BotMessage
         _ => throw new ArgumentOutOfRangeException(nameof(SourceType), SourceType, null)
     };
 
-    public long ChatId => _groupId ?? SourceType switch
+    public long ChatId => SourceType switch
     {
-        MessageSource.Qq => QqMessage!.GroupUin!.Value,
+        MessageSource.Qq => _groupId ?? QqMessage!.GroupUin!.Value,
         MessageSource.Telegram => TgMessage!.Chat.Id,
         _ => throw new ArgumentOutOfRangeException(nameof(SourceType), SourceType, null)
     };
 
     public bool ToBot => SourceType switch
     {
-        MessageSource.Qq => QqMessage!.TargetUin == _bot.Id,
+        MessageSource.Qq => (_targetId ?? QqMessage!.TargetUin) == _bot.Id,
         MessageSource.Telegram => TgMessage!.Entities!.Any(x =>
             x.Type is MessageEntityType.Mention && x.User!.Id == _bot.Id),
         _ => throw new ArgumentOutOfRangeException(nameof(SourceType), SourceType, null)

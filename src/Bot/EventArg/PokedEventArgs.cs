@@ -5,5 +5,5 @@ namespace DXKumaBot.Bot.EventArg;
 
 public sealed class PokedEventArgs(QqBot bot, GroupPokeEvent message) : BotEventArgsBase
 {
-    public override BotMessage Message { get; } = new(bot, message.GroupUin);
+    public override BotMessage Message { get; } = new(bot, message.GroupUin, message.TargetUin);
 }
