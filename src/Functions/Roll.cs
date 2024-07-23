@@ -24,15 +24,7 @@ public sealed partial class Roll
         {
             foreach (Group group in match.Groups)
             {
-                if (group.Index is 0)
-                {
-                    continue;
-                }
-
-                foreach (Capture capture in group.Captures)
-                {
-                    values.Add(capture.Value);
-                }
+                values.AddRange(from capture in @group.Captures where @group.Index is not 0 select capture.Value);
             }
         }
 

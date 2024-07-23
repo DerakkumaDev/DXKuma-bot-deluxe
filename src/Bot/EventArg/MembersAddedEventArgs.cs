@@ -22,19 +22,19 @@ public class MembersAddedEventArgs : EventArgs
     }
 
     public MessageSource SourceType { get; }
-    public TgMessage? TgMessage { get; }
     public GroupMemberIncreaseEvent? QqMessage { get; }
-
-    public string UserName => SourceType switch
-    {
-        MessageSource.Qq => ((QqBot)_bot).GetUserInfo(QqMessage!.MemberUin).Result!.Nickname,
-        MessageSource.Telegram => throw new NotSupportedException(),
-        _ => throw new ArgumentOutOfRangeException(nameof(SourceType), SourceType, null)
-    };
+    public TgMessage? TgMessage { get; }
 
     public long UserId => SourceType switch
     {
         MessageSource.Qq => QqMessage!.MemberUin,
+        MessageSource.Telegram => throw new NotSupportedException(),
+        _ => throw new ArgumentOutOfRangeException(nameof(SourceType), SourceType, null)
+    };
+
+    public string UserName => SourceType switch
+    {
+        MessageSource.Qq => ((QqBot)_bot).GetUserInfo(QqMessage!.MemberUin).Result!.Nickname,
         MessageSource.Telegram => throw new NotSupportedException(),
         _ => throw new ArgumentOutOfRangeException(nameof(SourceType), SourceType, null)
     };

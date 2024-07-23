@@ -2,15 +2,15 @@ namespace DXKumaBot.Bot.Message;
 
 public sealed class MessagePair
 {
-    public MessagePair(TextMessage message)
-    {
-        Text = message;
-    }
-
     public MessagePair(TextMessage message, MediaMessage media)
     {
         Text = message;
         Media = media;
+    }
+
+    public MessagePair(TextMessage message)
+    {
+        Text = message;
     }
 
     public MessagePair(MediaMessage media)

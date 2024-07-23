@@ -7,8 +7,6 @@ using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Common.Interface;
 using Lagrange.Core.Common.Interface.Api;
 using Lagrange.Core.Message;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace DXKumaBot.Bot;
 
@@ -19,8 +17,8 @@ public sealed class QqBot : IBot
 
     public QqBot()
     {
-        BotDeviceInfo deviceInfo = GetDeviceInfo();
-        _keyStore = LoadKeystore();
+        BotDeviceInfo deviceInfo = LagrangeHelper.GetDeviceInfo();
+        _keyStore = LagrangeHelper.LoadKeystore();
         _bot = BotFactory.Create(new(), deviceInfo, _keyStore ?? new BotKeystore());
     }
 
@@ -41,6 +39,31 @@ public sealed class QqBot : IBot
     public event AsyncEventHandler<PokedEventArgs>? Poked;
     public event AsyncEventHandler<MembersAddedEventArgs>? MembersAdded;
     public event AsyncEventHandler<MembersLeftEventArgs>? MembersLeft;
+
+    public async Task RunAsync()
+    {
+        RegisterEvents();
+        if (_keyStore is null)
+        {
+            (string Url, byte[] QrCode)? qrCode = await _bot.FetchQrCode();
+            if (qrCode is null)
+            {
+                throw new NotSupportedException();
+            }
+
+            await File.WriteAllBytesAsync("qr.png", qrCode.Value.QrCode);
+            await _bot.LoginByQrCode();
+            LagrangeHelper.SaveKeystore(_bot.UpdateKeystore());
+            return;
+        }
+
+        await _bot.LoginByPassword();
+    }
+
+    public async Task<BotUserInfo?> GetUserInfo(uint userId)
+    {
+        return await _bot.FetchUserInfo(userId);
+    }
 
     private void RegisterEvents()
     {
@@ -86,71 +109,6 @@ public sealed class QqBot : IBot
 
             await MembersLeft.Invoke(sender, new(this, args));
         };
-    }
-
-    public async Task RunAsync()
-    {
-        RegisterEvents();
-        if (_keyStore is null)
-        {
-            (string Url, byte[] QrCode)? qrCode = await _bot.FetchQrCode();
-            if (qrCode is null)
-            {
-                throw new NotSupportedException();
-            }
-
-            await File.WriteAllBytesAsync("qr.png", qrCode.Value.QrCode);
-            await _bot.LoginByQrCode();
-            SaveKeystore(_bot.UpdateKeystore());
-            return;
-        }
-
-        await _bot.LoginByPassword();
-    }
-
-    public async Task<BotUserInfo?> GetUserInfo(uint userId)
-    {
-        return await _bot.FetchUserInfo(userId);
-    }
-
-    private static BotDeviceInfo GetDeviceInfo()
-    {
-        if (!File.Exists("DeviceInfo.json"))
-        {
-            BotDeviceInfo deviceInfo = BotDeviceInfo.GenerateInfo();
-            File.WriteAllText("DeviceInfo.json", JsonSerializer.Serialize(deviceInfo));
-            return deviceInfo;
-        }
-
-        string text = File.ReadAllText("DeviceInfo.json");
-        BotDeviceInfo? info = JsonSerializer.Deserialize<BotDeviceInfo>(text);
-        if (info is not null)
-        {
-            return info;
-        }
-
-        info = BotDeviceInfo.GenerateInfo();
-        File.WriteAllText("DeviceInfo.json", JsonSerializer.Serialize(info));
-        return info;
-    }
-
-    private static void SaveKeystore(BotKeystore keystore)
-    {
-        File.WriteAllText("Keystore.json", JsonSerializer.Serialize(keystore));
-    }
-
-    private static BotKeystore? LoadKeystore()
-    {
-        if (!File.Exists("Keystore.json"))
-        {
-            return null;
-        }
-
-        string text = File.ReadAllText("Keystore.json");
-        return JsonSerializer.Deserialize<BotKeystore>(text, new JsonSerializerOptions
-        {
-            ReferenceHandler = ReferenceHandler.Preserve
-        });
     }
 
     private async Task SendMessageAsync(uint? id, string? text = null, MediaMessage? media = null,

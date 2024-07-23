@@ -22,15 +22,8 @@ public class MembersLeftEventArgs : EventArgs
     }
 
     public MessageSource SourceType { get; }
-    public TgMessage? TgMessage { get; }
     public GroupMemberDecreaseEvent? QqMessage { get; }
-
-    public string UserName => SourceType switch
-    {
-        MessageSource.Qq => ((QqBot)_bot).GetUserInfo(QqMessage!.MemberUin).Result!.Nickname,
-        MessageSource.Telegram => $"{TgMessage!.LeftChatMember!.FirstName}{TgMessage!.LeftChatMember!.LastName}",
-        _ => throw new ArgumentOutOfRangeException(nameof(SourceType), SourceType, null)
-    };
+    public TgMessage? TgMessage { get; }
 
     public string UserId => SourceType switch
     {
@@ -38,6 +31,13 @@ public class MembersLeftEventArgs : EventArgs
         MessageSource.Telegram => TgMessage!.LeftChatMember!.Username,
         _ => throw new ArgumentOutOfRangeException(nameof(SourceType), SourceType, null)
     } ?? throw new NullReferenceException();
+
+    public string UserName => SourceType switch
+    {
+        MessageSource.Qq => ((QqBot)_bot).GetUserInfo(QqMessage!.MemberUin).Result!.Nickname,
+        MessageSource.Telegram => $"{TgMessage!.LeftChatMember!.FirstName}{TgMessage!.LeftChatMember!.LastName}",
+        _ => throw new ArgumentOutOfRangeException(nameof(SourceType), SourceType, null)
+    };
 
     public async Task Reply(MessagePair messages)
     {

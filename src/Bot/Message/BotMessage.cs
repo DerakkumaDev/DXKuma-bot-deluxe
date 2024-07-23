@@ -32,21 +32,21 @@ public sealed class BotMessage
         SourceType = MessageSource.Telegram;
     }
 
+    public MessageSource SourceType { get; }
     public MessageChain? QqMessage { get; }
     public TgMessage? TgMessage { get; }
-    public MessageSource SourceType { get; }
-
-    public string? Text => SourceType switch
-    {
-        MessageSource.Qq => QqMessage!.GetEntity<TextEntity>()?.Text,
-        MessageSource.Telegram => TgMessage!.Text,
-        _ => throw new ArgumentOutOfRangeException(nameof(SourceType), SourceType, null)
-    };
 
     public long ChatId => SourceType switch
     {
         MessageSource.Qq => _groupId ?? QqMessage!.GroupUin!.Value,
         MessageSource.Telegram => TgMessage!.Chat.Id,
+        _ => throw new ArgumentOutOfRangeException(nameof(SourceType), SourceType, null)
+    };
+
+    public string? Text => SourceType switch
+    {
+        MessageSource.Qq => QqMessage!.GetEntity<TextEntity>()?.Text,
+        MessageSource.Telegram => TgMessage!.Text,
         _ => throw new ArgumentOutOfRangeException(nameof(SourceType), SourceType, null)
     };
 
