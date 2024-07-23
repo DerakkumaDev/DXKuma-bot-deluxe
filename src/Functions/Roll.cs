@@ -8,7 +8,7 @@ public sealed partial class Roll : RegexFunctionBase
 {
     private protected override async Task MainAsync(object? sender, MessageReceivedEventArgs args)
     {
-        if (string.IsNullOrEmpty(args.Message.Text))
+        if (string.IsNullOrEmpty(args.Message.Text) || !args.Message.ToBot)
         {
             return;
         }

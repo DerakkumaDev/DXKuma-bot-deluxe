@@ -14,7 +14,8 @@ public sealed class TgBot(TelegramConfig config) : IBot
     private readonly TelegramBotClient _bot = new(config.BotToken,
         config.Proxy.Enabled ? new(new HttpClientHandler { Proxy = new WebProxy(config.Proxy.Url, true) }) : default);
 
-    public long Id => _bot.BotId;
+    private string? _userName;
+    public string UserName => _userName ??= _bot.GetMeAsync().Result.Username!;
 
     public async Task SendMessageAsync(MessagePair messages, BotMessage source, bool noReply)
     {

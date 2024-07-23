@@ -4,15 +4,25 @@ using System.Text.RegularExpressions;
 
 namespace DXKumaBot.Functions;
 
-public sealed partial class LoveYou : RegexFunctionBase
+public sealed partial class LoveYou
 {
-    private protected override async Task MainAsync(object? sender, MessageReceivedEventArgs args)
+    public async Task EntryAsync(object? sender, MessageReceivedEventArgs args)
     {
+        if (string.IsNullOrEmpty(args.Message.Text) ||
+            (!args.Message.ToBot || !MessageToBotRegex().IsMatch(args.Message.Text)) &&
+            !MessageRegex().IsMatch(args.Message.Text))
+        {
+            return;
+        }
+
         string filePath = Path.Combine("Static", nameof(LoveYou), "0.png");
         MediaMessage message = new(MediaType.Photo, filePath);
         await args.Message.Reply(new("迪拉熊也喜欢你❤️", message));
     }
 
     [GeneratedRegex("(迪拉熊|dlx)我喜欢你", RegexOptions.IgnoreCase | RegexOptions.Singleline)]
-    private protected override partial Regex MessageRegex();
+    private partial Regex MessageRegex();
+
+    [GeneratedRegex("我喜欢你", RegexOptions.IgnoreCase | RegexOptions.Singleline)]
+    private partial Regex MessageToBotRegex();
 }

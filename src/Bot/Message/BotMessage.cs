@@ -52,9 +52,10 @@ public sealed class BotMessage
 
     public bool ToBot => SourceType switch
     {
-        MessageSource.Qq => (_targetId ?? QqMessage!.TargetUin) == _bot.Id,
-        MessageSource.Telegram => TgMessage!.Entities!.Any(x =>
-            x.Type is MessageEntityType.Mention && x.User!.Id == _bot.Id),
+        MessageSource.Qq => (_targetId ?? QqMessage!.TargetUin) == ((QqBot)_bot).Id,
+        MessageSource.Telegram => (from item in TgMessage!.Entities!
+            where item.Type is MessageEntityType.Mention
+            select item).Any(x => TgMessage.Text?[x.Offset..x.Length] == $"@{((TgBot)_bot).UserName}"),
         _ => throw new ArgumentOutOfRangeException(nameof(SourceType), SourceType, null)
     };
 
