@@ -29,16 +29,16 @@ public sealed class LxnsPlayer
 
     [JsonPropertyName("upload_time")] public string? UploadTime { get; set; }
 
-    public CommonUserInfo Convert()
+    public static implicit operator CommonUserInfo(LxnsPlayer lxUser)
     {
         return new()
         {
-            ClassRank = ClassRank,
-            CourseRank = CourseRank,
-            FrameId = Frame?.Id ?? 0,
-            IconId = Icon?.Id ?? 0,
-            Name = Name,
-            NamePlateId = NamePlate?.Id ?? 0
+            ClassRank = lxUser.ClassRank,
+            CourseRank = lxUser.CourseRank,
+            FrameId = lxUser.Frame?.Id ?? 0,
+            IconId = lxUser.Icon?.Id ?? 0,
+            Name = lxUser.Name,
+            NamePlateId = lxUser.NamePlate?.Id ?? 0
         };
     }
 }

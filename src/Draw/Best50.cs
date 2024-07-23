@@ -1,5 +1,4 @@
 using DXKumaBot.Common;
-using DXKumaBot.Response.Lxns;
 using DXKumaBot.Utils;
 using SixLabors.ImageSharp;
 
@@ -7,11 +6,6 @@ namespace DXKumaBot.Draw;
 
 public static class Best50
 {
-    public static async Task<MemoryStream> DrawAsync(LxnsB50 b50, LxnsPlayer userInfo, string configPath)
-    {
-        return await DrawAsync(b50.Convert(), userInfo.Convert(), configPath);
-    }
-
     private static async Task<MemoryStream> DrawAsync(CommonB50 b50, CommonUserInfo userInfo, string configPath)
     {
         string bgPath = Path.Combine("Static", "Background", "Best50.png");
