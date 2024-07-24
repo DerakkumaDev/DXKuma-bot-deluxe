@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace DXKumaBot.Response.Lxns;
 
-public sealed class LxnsCollectionRequired
+public sealed record LxnsCollectionRequired
 {
     [JsonPropertyName("difficulties")] public int[]? Difficulties { get; set; }
 

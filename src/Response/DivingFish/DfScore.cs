@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace DXKumaBot.Response.DivingFish;
 
-public sealed class DfScore
+public sealed record DfScore
 {
     [JsonPropertyName("achievements")] public float Achievements { get; set; }
 

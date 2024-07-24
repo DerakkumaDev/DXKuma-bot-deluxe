@@ -28,6 +28,7 @@ public sealed class BotInstance(Config config)
         Help help = new();
         Pick pick = new();
         PickNsfw pickNsfw = new();
+        Rank rank = new();
 
         MessageReceived += loveYou.EntryAsync;
         MessageReceived += wannaCao.EntryAsync;
@@ -42,6 +43,7 @@ public sealed class BotInstance(Config config)
         MessageReceived += help.EntryAsync;
         MessageReceived += pick.EntryAsync;
         MessageReceived += pickNsfw.EntryAsync;
+        MessageReceived += rank.EntryAsync;
     }
 
     private void RegisterEvents()

@@ -1,6 +1,6 @@
 namespace DXKumaBot.Common;
 
-public sealed class CommonB50
+public sealed record CommonB50
 {
     public List<CommonScore>? Dx { get; set; }
 

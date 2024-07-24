@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace DXKumaBot.Response.DivingFish;
 
-public sealed class DfB50
+public sealed record DfB50
 {
     [JsonPropertyName("additional_rating")]
     public int AdditionalRating { get; set; }

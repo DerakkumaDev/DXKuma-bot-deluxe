@@ -46,6 +46,17 @@ public sealed class QqBot : IBot
         throw new OperationCanceledException();
     }
 
+    public async Task<string> GetUserName(long id, long _)
+    {
+        BotUserInfo? userInfo = await _bot.FetchUserInfo(Convert.ToUInt32(id));
+        if (userInfo is null)
+        {
+            throw new ArgumentException($"{id} not a valid user ID", nameof(id));
+        }
+
+        return userInfo.Nickname;
+    }
+
     public event AsyncEventHandler<MessageReceivedEventArgs>? MessageReceived;
     public event AsyncEventHandler<PokedEventArgs>? Poked;
     public event AsyncEventHandler<MembersAddedEventArgs>? MembersAdded;

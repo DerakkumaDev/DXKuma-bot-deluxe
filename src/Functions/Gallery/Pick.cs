@@ -1,5 +1,6 @@
 using DXKumaBot.Bot.EventArg;
 using DXKumaBot.Bot.Message;
+using DXKumaBot.Utils;
 using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 
@@ -44,7 +45,21 @@ public sealed partial class Pick : RegexFunctionBase
         string[] files = Directory.GetFiles(dirPath);
         int index = Random.Shared.Next(files.Length);
         MediaMessage message = new(MediaType.Photo, files[index]);
-        await args.Message.ReplyAsync(message);
+        await args.Message.ReplyAsync(message, true);
+        RakingData? data = Storage.Get<RakingData>(nameof(Gallery), args.Message.ChatId);
+        if (data is null || !data.Date.IsSameWeek(DateTime.Today))
+        {
+            data = new()
+            {
+                Id = args.Message.ChatId,
+                Date = args.Message.DateTime,
+                Counts = []
+            };
+        }
+
+        data.Counts.TryGetValue(args.Message.UserId, out int count);
+        data.Counts[args.Message.UserId] = count + 1;
+        Storage.Set(nameof(Gallery), data);
     }
 
     [GeneratedRegex("^(随机迪拉熊|dlx)$", RegexOptions.IgnoreCase | RegexOptions.Singleline)]

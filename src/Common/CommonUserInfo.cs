@@ -1,6 +1,6 @@
 namespace DXKumaBot.Common;
 
-public sealed class CommonUserInfo
+public sealed record CommonUserInfo
 {
     public string? Name { get; set; }
 

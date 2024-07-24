@@ -55,7 +55,7 @@ public sealed partial class PickNsfw : RegexFunctionBase
         MediaMessage message = new(MediaType.Photo, files[index]);
         BotMessage reply = await args.Message.ReplyAsync(message);
         await Task.Delay(TimeSpan.FromSeconds(10));
-        await reply.DeleteAsync();
+        await reply.Bot.DeleteMessageAsync(reply);
     }
 
     [GeneratedRegex("^(随机迪拉熊|dlx)((涩|色|瑟)图|st)$", RegexOptions.IgnoreCase | RegexOptions.Singleline)]

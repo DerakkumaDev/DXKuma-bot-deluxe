@@ -3,7 +3,7 @@ using DXKumaBot.Response.Lxns;
 
 namespace DXKumaBot.Common;
 
-public sealed class CommonScore
+public sealed record CommonScore
 {
     public int Id { get; set; }
 

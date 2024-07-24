@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace DXKumaBot.Response.Lxns;
 
-public sealed class LxnsResponse<T>
+public sealed record LxnsResponse<T>
 {
     [JsonPropertyName("success")] public bool Success { get; set; }
 

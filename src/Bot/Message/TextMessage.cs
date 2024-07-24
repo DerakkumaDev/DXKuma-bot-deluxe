@@ -1,8 +1,8 @@
 namespace DXKumaBot.Bot.Message;
 
-public sealed class TextMessage
+public sealed record TextMessage
 {
-    public required string Text { get; set; }
+    public required string Text { get; init; }
 
     public static implicit operator string(TextMessage message)
     {
