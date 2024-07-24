@@ -12,7 +12,15 @@ namespace DXKumaBot.Bot;
 public sealed class TgBot(TelegramConfig config) : IBot
 {
     private readonly TelegramBotClient _bot = new(config.BotToken,
-        config.Proxy.Enabled ? new(new HttpClientHandler { Proxy = new WebProxy(config.Proxy.Url, true) }) : default);
+        config.Proxy.Enabled
+            ? new(new HttpClientHandler
+            {
+                Proxy = new WebProxy(config.Proxy.Url, true, default,
+                    config.Proxy.Credential.Enabled
+                        ? new NetworkCredential(config.Proxy.Credential.UserName, config.Proxy.Credential.Password)
+                        : default)
+            })
+            : default);
 
     private string? _userName;
     public string UserName => _userName ??= _bot.GetMeAsync().Result.Username!;

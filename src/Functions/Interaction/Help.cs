@@ -16,7 +16,7 @@ public sealed partial class Help : RegexFunctionBase
             return;
         }
 
-        await args.Message.ReplyAsync(message);
+        await args.Message.ReplyAsync(message, true);
     }
 
     [GeneratedRegex("^((迪拉熊|dlx)(help|指令|帮助)|指令大全)$", RegexOptions.IgnoreCase | RegexOptions.Singleline)]
