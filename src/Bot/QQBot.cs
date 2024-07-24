@@ -46,7 +46,7 @@ public sealed class QqBot : IBot
         throw new OperationCanceledException();
     }
 
-    public async Task<string> GetUserName(long id, long _)
+    public async Task<string> GetUserNameAsync(long id, long _)
     {
         BotUserInfo? userInfo = await _bot.FetchUserInfo(Convert.ToUInt32(id));
         if (userInfo is null)

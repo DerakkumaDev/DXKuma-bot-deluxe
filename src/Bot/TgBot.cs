@@ -34,7 +34,7 @@ public sealed class TgBot(TelegramConfig config) : IBot
         await _bot.DeleteMessageAsync(message.TgMessage!.Chat.Id, message.TgMessage.MessageId);
     }
 
-    public async Task<string> GetUserName(long userId, long chatId)
+    public async Task<string> GetUserNameAsync(long userId, long chatId)
     {
         ChatMember userInfo = await _bot.GetChatMemberAsync(chatId, userId);
         return $"{userInfo.User.FirstName}{userInfo.User.LastName}";

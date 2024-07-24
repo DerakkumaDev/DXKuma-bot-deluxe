@@ -28,7 +28,7 @@ public sealed partial class Rank : RegexFunctionBase
         int index = 0;
         foreach ((long userId, int count) in data.Counts)
         {
-            string userName = await args.Message.Bot.GetUserName(userId, args.Message.ChatId);
+            string userName = await args.Message.Bot.GetUserNameAsync(userId, args.Message.ChatId);
             stringBuilder.AppendLine($"{++index}. {userName}：{count}");
             if (index > 4)
             {
