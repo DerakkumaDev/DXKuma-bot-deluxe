@@ -27,7 +27,7 @@ public sealed class QqBot : IBot
     public async Task<BotMessage> SendMessageAsync(MessagePair messages, BotMessage source, bool noReply)
     {
         return new(this,
-            (await SendMessageAsync(Convert.ToUInt32(source.ChatId), messages.Text!, messages.Media,
+            (await SendMessageAsync(Convert.ToUInt32(source.ChatId), messages.Text?.Text, messages.Media,
                 noReply ? default : source.QqMessage))!);
     }
 

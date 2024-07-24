@@ -21,32 +21,12 @@ public sealed partial class PickNsfw : RegexFunctionBase
             return;
         }
 
-        if (args.Message.ChatId != _specialGroup)
+
+        if (args.Message.ChatId != _specialGroup &&
+            !Pick.CheckInterval(_groups, args.Message.ChatId, args.Message.DateTime))
         {
-            if (!_groups.TryGetValue(args.Message.ChatId, out ConcurrentQueue<DateTime>? queue))
-            {
-                queue = new();
-            }
-
-            while (queue.TryPeek(out DateTime dateTime))
-            {
-                if (args.Message.DateTime - dateTime < TimeSpan.FromMinutes(1))
-                {
-                    break;
-                }
-
-                queue.TryDequeue(out _);
-            }
-
-            if (queue.Count > 9)
-            {
-                _groups[args.Message.ChatId] = queue;
-                await args.Message.ReplyAsync(new("迪拉熊关心你的身体健康，所以图就先不发了~"));
-                return;
-            }
-
-            queue.Enqueue(args.Message.DateTime);
-            _groups[args.Message.ChatId] = queue;
+            await args.Message.ReplyAsync(new("迪拉熊关心你的身体健康，所以图就先不发了~"));
+            return;
         }
 
         string dirPath = Path.Combine("Static", nameof(Gallery), "NSFW");
