@@ -1,5 +1,6 @@
 using DXKumaBot.Bot.EventArg;
 using DXKumaBot.Utils;
+using LiteDB;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -9,27 +10,22 @@ public sealed partial class Rank : RegexFunctionBase
 {
     private protected override async Task MainAsync(object? sender, MessageReceivedEventArgs args)
     {
-        RakingData? data = Storage.Get<RakingData>(nameof(Gallery), args.Message.ChatId);
-        if (data is null)
+        ILiteCollection<RakingData> col = Storage.GetAll<RakingData>(nameof(Gallery));
+        RakingData[] data = [..col.Find(x => x.SourceType == args.Message.SourceType)];
+        Array.Sort(data);
+        Array.Reverse(data);
+        if (data.Length < 1)
         {
-            await args.Message.ReplyAsync(new("空的打哟~"));
-            return;
-        }
-
-        if (!data.Date.IsSameWeek(DateTime.Today))
-        {
-            Storage.Delete<RakingData>(nameof(Gallery), args.Message.ChatId);
-            await args.Message.ReplyAsync(new("空的打哟~"));
             return;
         }
 
         StringBuilder stringBuilder = new();
         stringBuilder.AppendLine("本周迪拉熊厨力最高的人是……");
         int index = 0;
-        foreach ((long userId, int count) in data.Counts)
+        foreach (RakingData rakingData in data)
         {
-            string userName = await args.Message.Bot.GetUserNameAsync(userId, args.Message.ChatId);
-            stringBuilder.AppendLine($"{++index}. {userName}：{count}");
+            string userName = await args.Message.Bot.GetUserNameAsync(rakingData.Id, args.Message.ChatId);
+            stringBuilder.AppendLine($"{++index}. {userName}：{rakingData.Dates.Count}");
             if (index > 4)
             {
                 break;

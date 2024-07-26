@@ -6,6 +6,12 @@ public static class Storage
 {
     private static readonly LiteDatabase s_db = new($"{nameof(Storage)}.db");
 
+    public static ILiteCollection<T> GetAll<T>(string name)
+    {
+        ILiteCollection<T> col = s_db.GetCollection<T>(name);
+        return col;
+    }
+
     public static T? Get<T>(string name, long id)
     {
         ILiteCollection<T> col = s_db.GetCollection<T>(name);
