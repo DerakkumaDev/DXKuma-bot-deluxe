@@ -25,9 +25,9 @@ public class MembersAddedEventArgs : EventArgs
     public GroupMemberIncreaseEvent? QqMessage { get; }
     public TgMessage? TgMessage { get; }
 
-    public long UserId => SourceType switch
+    public string UserId => SourceType switch
     {
-        MessageSource.Qq => QqMessage!.MemberUin,
+        MessageSource.Qq => ((QqBot)_bot).GetUserInfoAsync(QqMessage!.MemberUin).Result!.Qid ?? QqMessage.MemberUin.ToString(),
         MessageSource.Telegram => throw new NotSupportedException(),
         _ => throw new ArgumentOutOfRangeException(nameof(SourceType), SourceType, null)
     };

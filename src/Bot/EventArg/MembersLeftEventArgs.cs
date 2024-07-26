@@ -27,10 +27,10 @@ public class MembersLeftEventArgs : EventArgs
 
     public string UserId => SourceType switch
     {
-        MessageSource.Qq => QqMessage!.MemberUin.ToString(),
-        MessageSource.Telegram => TgMessage!.LeftChatMember!.Username,
+        MessageSource.Qq => ((QqBot)_bot).GetUserInfoAsync(QqMessage!.MemberUin).Result!.Qid ?? QqMessage.MemberUin.ToString(),
+        MessageSource.Telegram => TgMessage!.LeftChatMember!.Username!,
         _ => throw new ArgumentOutOfRangeException(nameof(SourceType), SourceType, null)
-    } ?? throw new NullReferenceException();
+    };
 
     public string UserName => SourceType switch
     {
