@@ -1,7 +1,7 @@
 using DXKumaBot.Bot.EventArg;
 using DXKumaBot.Functions.Gallery;
 using DXKumaBot.Functions.Interaction;
-using DXKumaBot.Utils;
+using Microsoft.VisualStudio.Threading;
 
 namespace DXKumaBot.Bot;
 

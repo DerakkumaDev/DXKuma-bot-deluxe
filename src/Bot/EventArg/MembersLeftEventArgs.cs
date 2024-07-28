@@ -27,14 +27,23 @@ public class MembersLeftEventArgs : EventArgs
 
     public string UserId => SourceType switch
     {
-        MessageSource.Qq => ((QqBot)_bot).GetUserInfoAsync(QqMessage!.MemberUin).Result!.Qid ?? QqMessage.MemberUin.ToString(),
+#pragma warning disable VSTHRD002
+#pragma warning disable VSTHRD104
+        MessageSource.Qq => ((QqBot)_bot).GetUserInfoAsync(QqMessage!.MemberUin).Result!.Qid ??
+                            QqMessage.MemberUin.ToString(),
+#pragma warning restore VSTHRD104
+#pragma warning restore VSTHRD002
         MessageSource.Telegram => TgMessage!.LeftChatMember!.Username!,
         _ => throw new ArgumentOutOfRangeException(nameof(SourceType), SourceType, null)
     };
 
     public string UserName => SourceType switch
     {
+#pragma warning disable VSTHRD002
+#pragma warning disable VSTHRD104
         MessageSource.Qq => ((QqBot)_bot).GetUserInfoAsync(QqMessage!.MemberUin).Result!.Nickname,
+#pragma warning restore VSTHRD104
+#pragma warning restore VSTHRD002
         MessageSource.Telegram => $"{TgMessage!.LeftChatMember!.FirstName}{TgMessage!.LeftChatMember!.LastName}",
         _ => throw new ArgumentOutOfRangeException(nameof(SourceType), SourceType, null)
     };

@@ -7,6 +7,7 @@ using Lagrange.Core.Common.Entity;
 using Lagrange.Core.Common.Interface;
 using Lagrange.Core.Common.Interface.Api;
 using Lagrange.Core.Message;
+using Microsoft.VisualStudio.Threading;
 
 namespace DXKumaBot.Bot;
 
@@ -95,6 +96,7 @@ public sealed class QqBot : IBot
         _bot.Invoker.OnBotOnlineEvent += (_, @event) => { Console.WriteLine(@event.ToString()); };
         _bot.Invoker.OnBotNewDeviceVerify += (_, @event) => { Console.WriteLine(@event.ToString()); };
 #endif
+#pragma warning disable VSTHRD101
         _bot.Invoker.OnGroupMessageReceived += async (sender, args) =>
         {
             if (MessageReceived is null)
@@ -102,7 +104,7 @@ public sealed class QqBot : IBot
                 return;
             }
 
-            await MessageReceived.Invoke(sender, new(this, args));
+            await MessageReceived.InvokeAsync(sender, new(this, args));
         };
         _bot.Invoker.OnGroupPokeEvent += async (sender, args) =>
         {
@@ -111,7 +113,7 @@ public sealed class QqBot : IBot
                 return;
             }
 
-            await Poked.Invoke(sender, new(this, args));
+            await Poked.InvokeAsync(sender, new(this, args));
         };
         _bot.Invoker.OnGroupMemberIncreaseEvent += async (sender, args) =>
         {
@@ -120,7 +122,7 @@ public sealed class QqBot : IBot
                 return;
             }
 
-            await MembersAdded.Invoke(sender, new(this, args));
+            await MembersAdded.InvokeAsync(sender, new(this, args));
         };
         _bot.Invoker.OnGroupMemberDecreaseEvent += async (sender, args) =>
         {
@@ -129,8 +131,9 @@ public sealed class QqBot : IBot
                 return;
             }
 
-            await MembersLeft.Invoke(sender, new(this, args));
+            await MembersLeft.InvokeAsync(sender, new(this, args));
         };
+#pragma warning restore VSTHRD101
     }
 
     private async Task<MessageChain?> SendMessageAsync(uint? id, string? text = null, MediaMessage? media = null,

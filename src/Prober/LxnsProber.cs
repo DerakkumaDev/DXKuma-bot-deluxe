@@ -14,7 +14,11 @@ public sealed class LxnsProber
         _httpClient = new();
         _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", apiKey);
         string url = $"{BaseUrl}/player/qq/{qq}";
+#pragma warning disable VSTHRD002
+#pragma warning disable VSTHRD104
         _userInfo = GetAsync<LxnsPlayer>(url).Result;
+#pragma warning restore VSTHRD104
+#pragma warning restore VSTHRD002
     }
 
     private async Task<T> GetAsync<T>(string url)

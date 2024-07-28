@@ -1,6 +1,7 @@
 global using TgMessage = Telegram.Bot.Types.Message;
 using DXKumaBot.Bot.EventArg;
 using DXKumaBot.Bot.Message;
+using Microsoft.VisualStudio.Threading;
 using System.Net;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -23,7 +24,11 @@ public sealed class TgBot(TelegramConfig config) : IBot
             : default);
 
     private string? _userName;
+#pragma warning disable VSTHRD002
+#pragma warning disable VSTHRD104
     public string UserName => _userName ??= _bot.GetMeAsync().Result.Username!;
+#pragma warning restore VSTHRD104
+#pragma warning restore VSTHRD002
 
     public async Task<BotMessage> SendMessageAsync(MessagePair messages, BotMessage source, bool noReply)
     {
@@ -48,9 +53,9 @@ public sealed class TgBot(TelegramConfig config) : IBot
         return $"{userInfo.User.FirstName}{userInfo.User.LastName}";
     }
 
-    public event Utils.AsyncEventHandler<MessageReceivedEventArgs>? MessageReceived;
-    public event Utils.AsyncEventHandler<MembersAddedEventArgs>? MembersAdded;
-    public event Utils.AsyncEventHandler<MembersLeftEventArgs>? MembersLeft;
+    public event Microsoft.VisualStudio.Threading.AsyncEventHandler<MessageReceivedEventArgs>? MessageReceived;
+    public event Microsoft.VisualStudio.Threading.AsyncEventHandler<MembersAddedEventArgs>? MembersAdded;
+    public event Microsoft.VisualStudio.Threading.AsyncEventHandler<MembersLeftEventArgs>? MembersLeft;
 
     public void Run()
     {
@@ -71,13 +76,13 @@ public sealed class TgBot(TelegramConfig config) : IBot
             switch (message)
             {
                 case { Type: MessageType.Text, Text: not null } when MessageReceived is not null:
-                    await MessageReceived.Invoke(_bot, new(this, message));
+                    await MessageReceived.InvokeAsync(_bot, new(this, message));
                     return;
                 case { Type: MessageType.ChatMembersAdded, NewChatMembers: not null } when MembersAdded is not null:
-                    await MembersAdded.Invoke(_bot, new(this, message));
+                    await MembersAdded.InvokeAsync(_bot, new(this, message));
                     return;
                 case { Type: MessageType.ChatMemberLeft, LeftChatMember: not null } when MembersLeft is not null:
-                    await MembersLeft.Invoke(_bot, new(this, message));
+                    await MembersLeft.InvokeAsync(_bot, new(this, message));
                     break;
             }
         };
