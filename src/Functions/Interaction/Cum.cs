@@ -7,9 +7,11 @@ namespace DXKumaBot.Functions.Interaction;
 
 public sealed partial class Cum : RegexFunctionBase
 {
+    private readonly WeightsRandom _random = new([9, 1]);
+
     private protected override async Task MainAsync(object? sender, MessageReceivedEventArgs args)
     {
-        int index = Random.Shared.Choose([9, 1]);
+        int index = _random.Next();
         string filePath = Path.Combine("Static", nameof(Cum), $"{index}.png");
         MediaMessage message = new(MediaType.Photo, filePath);
         await args.Message.ReplyAsync(message);

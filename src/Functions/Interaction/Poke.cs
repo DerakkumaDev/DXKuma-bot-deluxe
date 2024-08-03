@@ -7,6 +7,8 @@ namespace DXKumaBot.Functions.Interaction;
 
 public sealed partial class Poke : RegexFunctionBase
 {
+    private readonly WeightsRandom _random = new([9, 9, 9, 9, 9, 9, 9, 9, 4, 4]);
+
     private readonly string[] _replies =
     [
         "不可以戳迪拉熊的屁股啦~",
@@ -20,8 +22,6 @@ public sealed partial class Poke : RegexFunctionBase
         "迪拉熊懂你的意思~",
         "再戳迪拉熊就跟你绝交！"
     ];
-
-    private readonly int[] _weights = [9, 9, 9, 9, 9, 9, 9, 9, 4, 4];
 
     public async Task QqEntryAsync(object? sender, PokedEventArgs args)
     {
@@ -42,7 +42,7 @@ public sealed partial class Poke : RegexFunctionBase
 
     private MessagePair GetReplyMessages()
     {
-        int index = Random.Shared.Choose(_weights);
+        int index = _random.Next();
         string reply = _replies[index];
         string filePath = Path.Combine("Static", nameof(Poke), $"{index}.png");
         MediaMessage message = new(MediaType.Photo, filePath);

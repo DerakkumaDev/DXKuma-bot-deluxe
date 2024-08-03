@@ -7,6 +7,8 @@ namespace DXKumaBot.Functions.Interaction;
 
 public sealed partial class WannaCao : RegexFunctionBase
 {
+    private readonly WeightsRandom _random = new([11, 11, 11, 11, 11, 11, 11, 11, 11, 1]);
+
     private readonly (string, int)[] _replies =
     [
         ("变态！！！", 0),
@@ -21,11 +23,9 @@ public sealed partial class WannaCao : RegexFunctionBase
         ("……你会对迪拉熊负责的，对吧？", 1)
     ];
 
-    private readonly int[] _weights = [11, 11, 11, 11, 11, 11, 11, 11, 11, 1];
-
     private protected override async Task MainAsync(object? sender, MessageReceivedEventArgs args)
     {
-        int index = Random.Shared.Choose(_weights);
+        int index = _random.Next();
         (string Text, int PhotoIndex) reply = _replies[index];
         string filePath = Path.Combine("Static", nameof(WannaCao), $"{reply.PhotoIndex}.png");
         MediaMessage message = new(MediaType.Photo, filePath);
