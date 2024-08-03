@@ -78,10 +78,10 @@ public sealed class TgBot(TelegramConfig config) : IBot
                 case { Type: MessageType.Text, Text: not null } when MessageReceived is not null:
                     await MessageReceived.InvokeAsync(_bot, new(this, message));
                     return;
-                case { Type: MessageType.ChatMembersAdded, NewChatMembers: not null } when MembersAdded is not null:
+                case { Type: MessageType.NewChatMembers, NewChatMembers: not null } when MembersAdded is not null:
                     await MembersAdded.InvokeAsync(_bot, new(this, message));
                     return;
-                case { Type: MessageType.ChatMemberLeft, LeftChatMember: not null } when MembersLeft is not null:
+                case { Type: MessageType.LeftChatMember, LeftChatMember: not null } when MembersLeft is not null:
                     await MembersLeft.InvokeAsync(_bot, new(this, message));
                     break;
             }
