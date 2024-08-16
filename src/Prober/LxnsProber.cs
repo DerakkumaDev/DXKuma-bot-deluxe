@@ -16,12 +16,12 @@ public sealed class LxnsProber
         string url = $"{BaseUrl}/player/qq/{qq}";
 #pragma warning disable VSTHRD002
 #pragma warning disable VSTHRD104
-        _userInfo = GetAsync<LxnsPlayer>(url).Result;
+        _userInfo = GetAsync<LxnsPlayer>(new(url)).Result;
 #pragma warning restore VSTHRD104
 #pragma warning restore VSTHRD002
     }
 
-    private async Task<T> GetAsync<T>(string url)
+    private async Task<T> GetAsync<T>(Uri url)
     {
         HttpResponseMessage response = await _httpClient.GetAsync(url);
         response.EnsureSuccessStatusCode();
@@ -37,7 +37,7 @@ public sealed class LxnsProber
     public async Task<LxnsB50> GetB50Async()
     {
         string url = $"{BaseUrl}/player/{_userInfo.FriendCode}/bests";
-        LxnsB50 result = await GetAsync<LxnsB50>(url);
+        LxnsB50 result = await GetAsync<LxnsB50>(new(url));
         return result;
     }
 

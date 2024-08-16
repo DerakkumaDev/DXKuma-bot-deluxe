@@ -73,7 +73,12 @@ public sealed record BotMessage
         _ => throw new ArgumentOutOfRangeException(nameof(SourceType), SourceType, null)
     };
 
-    public async Task<BotMessage> ReplyAsync(MessagePair messages, bool noReply = false)
+    public async Task<BotMessage> ReplyAsync(MessagePair messages)
+    {
+        return await Bot.SendMessageAsync(messages, this, false);
+    }
+
+    public async Task<BotMessage> ReplyAsync(MessagePair messages, bool noReply)
     {
         return await Bot.SendMessageAsync(messages, this, noReply);
     }
