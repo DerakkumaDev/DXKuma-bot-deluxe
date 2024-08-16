@@ -3,6 +3,7 @@
 
 # 迪拉熊 Bot - DXKuma Bot
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/16795e74d92641c984e3a857444a9965)](https://app.codacy.com/gh/Yuisyuu/DXKuma?utm_source=github.com&utm_medium=referral&utm_content=Yuisyuu/DXKuma&utm_campaign=Badge_Grade)
 [![qq](https://img.shields.io/badge/2689340931-gray?logo=tencent%20qq&style=social)](https://qm.qq.com/cgi-bin/qm/qr?k=LyQOTRI7ViXYSTg0zbS2sGgcmkbYrxbP)
 [![telegram](https://img.shields.io/badge/DXKuma__Bot-gray?logo=telegram&style=social)](https://t.me/DXKuma_Bot)
 <br>
