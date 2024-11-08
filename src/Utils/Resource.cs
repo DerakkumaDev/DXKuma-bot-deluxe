@@ -58,7 +58,12 @@ public static class Resource
         return false;
     }
 
-    public static async Task<byte[]> GetAsync(ResourceType type, int id, DataSource source = DataSource.Default)
+    public static async Task<byte[]> GetAsync(ResourceType type, int id)
+    {
+        return await GetAsync(type, id, DataSource.Default);
+    }
+
+    public static async Task<byte[]> GetAsync(ResourceType type, int id, DataSource source)
     {
         string baseUrl = BaseUrl;
         string typeName = Enum.GetName(type)!.ToLower();
