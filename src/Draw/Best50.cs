@@ -15,7 +15,7 @@ public static class Best50
 
         foreach (CommonScore song in b50.Standard!)
         {
-            byte[] jacketImgBytes = await Resource.GetJacketAsync(song.Id);
+            byte[] jacketImgBytes = await Resource.GetAsync(Resource.ResourceType.Jacket, song.Id);
             string pbPath = Path.Combine("Static", "PartBase", $"{song.LevelIndex}.png");
             Image partImg = await Image.LoadAsync(pbPath);
             Image jacketImg = Image.Load(jacketImgBytes);
