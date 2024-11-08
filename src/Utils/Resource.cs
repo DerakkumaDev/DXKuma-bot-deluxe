@@ -1,37 +1,55 @@
-using LiteDB;
-
 namespace DXKumaBot.Utils;
 
 public static class Resource
 {
+    public enum DataSource
+    {
+        Default,
+        Lxns,
+        DivingFish,
+        Local = -1
+    }
+
+    public enum ResourceType
+    {
+        Icon,
+        Plate,
+        Jacket
+    }
+
     private const string BaseUrl = "https://assets2.lxns.net/maimai";
-
-    private const string CacheDirPath = "Cache";
-
-    private static readonly LiteDatabase s_db;
+    private const string BaseUrl2 = "https://www.diving-fish.com";
+    private const string CachePathName = "Cache";
 
     static Resource()
     {
-        if (!Directory.Exists(CacheDirPath))
+        if (!Directory.Exists(CachePathName))
         {
-            Directory.CreateDirectory(CacheDirPath);
+            Directory.CreateDirectory(CachePathName);
         }
 
-        s_db = new("Cache.db");
+        CacheOutdateDays = -1;
     }
+
+    public static int CacheOutdateDays { private get; set; }
 
     private static bool CheckAvailableCache(string type, int id)
     {
         string path = Path.Combine(type, $"{id}.png");
-        string fullPath = Path.Combine(CacheDirPath, path);
+        string fullPath = Path.Combine(CachePathName, path);
         if (!File.Exists(fullPath))
         {
             return false;
         }
 
-        ILiteCollection<Cache> col = s_db.GetCollection<Cache>(type);
-        Cache cache = col.FindById(id);
-        if (cache is not null && DateTime.UtcNow - cache.CacheTime < TimeSpan.FromDays(1))
+        if (CacheOutdateDays < 0)
+        {
+            return true;
+        }
+
+        Storage storage = Storage.GetFromName(CachePathName);
+        Cache? cache = storage.Get<Cache>(type, id);
+        if (cache is not null && DateTime.UtcNow - cache.CacheTime < TimeSpan.FromDays(CacheOutdateDays))
         {
             return true;
         }
@@ -40,39 +58,46 @@ public static class Resource
         return false;
     }
 
-    private static async Task<byte[]> GetAsync(string type, int id)
+    public static async Task<byte[]> GetAsync(ResourceType type, int id, DataSource source = DataSource.Default)
     {
-        string dirPath = Path.Combine(CacheDirPath, type);
+        string baseUrl = BaseUrl;
+        string typeName = Enum.GetName(type)!.ToLower();
+        string idStr = id.ToString();
+
+        if (source is DataSource.DivingFish && type is not ResourceType.Jacket)
+        {
+            throw new NotSupportedException();
+        }
+
+        if (source is DataSource.Default or DataSource.DivingFish && type is ResourceType.Jacket)
+        {
+            baseUrl = BaseUrl2;
+            typeName = "covers";
+            idStr = id.ToString("D5");
+        }
+
+        string dirPath = Path.Combine(CachePathName, typeName);
         string path = Path.Combine(dirPath, $"{id}.png");
-        if (CheckAvailableCache(type, id))
+        if (CheckAvailableCache(typeName, id))
         {
             return await File.ReadAllBytesAsync(path);
         }
 
         using HttpClient httpClient = new();
-        byte[] img = await httpClient.GetByteArrayAsync($"{BaseUrl}/{type}/{id}.png");
+        byte[] img = await httpClient.GetByteArrayAsync($"{baseUrl}/{typeName}/{idStr}.png");
         if (!Directory.Exists(dirPath))
         {
             Directory.CreateDirectory(dirPath);
         }
 
         await File.WriteAllBytesAsync(path, img);
+        Storage storage = Storage.GetFromName(CachePathName);
+        storage.Set(Enum.GetName(type)!, new Cache
+        {
+            Id = id,
+            CacheTime = DateTime.UtcNow
+        });
         return img;
-    }
-
-    public static async Task<byte[]> GetIconAsync(int id)
-    {
-        return await GetAsync("icon", id);
-    }
-
-    public static async Task<byte[]> GetPlateAsync(int id)
-    {
-        return await GetAsync("plate", id);
-    }
-
-    public static async Task<byte[]> GetJacketAsync(int id)
-    {
-        return await GetAsync("jacket", id);
     }
 
     private class Cache

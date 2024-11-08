@@ -1,5 +1,6 @@
 using DXKumaBot.Bot.EventArg;
-using DXKumaBot.Bot.Message;
+using Lagrange.Core.Common.Interface.Api;
+using Lagrange.Core.Message;
 using System.Text.RegularExpressions;
 
 namespace DXKumaBot.Functions.Interaction;
@@ -8,24 +9,27 @@ public sealed partial class LoveYou
 {
     public async Task EntryAsync(object? sender, MessageReceivedEventArgs args)
     {
-        if (string.IsNullOrEmpty(args.Message.Text))
+        if (string.IsNullOrEmpty(args.Text.Value))
         {
             return;
         }
 
-        if (args.Message.ToBot && !MessageToBotRegex().IsMatch(args.Message.Text))
+        if (args.MentionedBot && !MessageToBotRegex().IsMatch(args.Text.Value))
         {
             return;
         }
 
-        if (!MessageRegex().IsMatch(args.Message.Text))
+        if (!MessageRegex().IsMatch(args.Text.Value))
         {
             return;
         }
 
-        string filePath = Path.Combine("Static", nameof(LoveYou), "0.png");
-        MediaMessage message = new(MediaType.Photo, filePath);
-        await args.Message.ReplyAsync(new("迪拉熊也喜欢你❤️", message));
+        MessageBuilder messageBuilder = MessageBuilder.Group(args.GroupUin);
+        messageBuilder.Forward(args.Event.Chain);
+        messageBuilder.Text("迪拉熊也喜欢你❤️");
+        string filePath = Path.Combine("Static", GetType().Name, "0.png");
+        messageBuilder.Image(filePath);
+        await args.Bot.SendMessage(messageBuilder.Build());
     }
 
     [GeneratedRegex("^(迪拉熊|dlx)我喜欢你$", RegexOptions.IgnoreCase | RegexOptions.Singleline)]

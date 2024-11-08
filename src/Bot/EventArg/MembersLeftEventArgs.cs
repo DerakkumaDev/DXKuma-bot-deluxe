@@ -1,60 +1,19 @@
-using DXKumaBot.Bot.Message;
+using Lagrange.Core;
+using Lagrange.Core.Common.Entity;
+using Lagrange.Core.Common.Interface.Api;
 using Lagrange.Core.Event.EventArg;
 
 namespace DXKumaBot.Bot.EventArg;
 
-public class MembersLeftEventArgs : EventArgs
+public sealed class MembersLeftEventArgs(BotContext bot, GroupMemberDecreaseEvent message) : BotEventArgsBase(bot)
 {
-    private readonly IBot _bot;
+    public GroupMemberDecreaseEvent Event => message;
+    public string? MemberQid => MemberInfo.Value.Qid;
+    public string MemberName => MemberInfo.Value.Nickname;
 
-    public MembersLeftEventArgs(IBot bot, GroupMemberDecreaseEvent message)
-    {
-        _bot = bot;
-        QqMessage = message;
-        SourceType = MessageSource.Qq;
-    }
-
-    public MembersLeftEventArgs(IBot bot, TgMessage message)
-    {
-        _bot = bot;
-        TgMessage = message;
-        SourceType = MessageSource.Telegram;
-    }
-
-    public MessageSource SourceType { get; }
-    public GroupMemberDecreaseEvent? QqMessage { get; }
-    public TgMessage? TgMessage { get; }
-
-    public string UserId => SourceType switch
-    {
-#pragma warning disable VSTHRD002
-#pragma warning disable VSTHRD104
-        MessageSource.Qq => ((QqBot)_bot).GetUserInfoAsync(QqMessage!.MemberUin).Result!.Qid ??
-                            QqMessage.MemberUin.ToString(),
-#pragma warning restore VSTHRD104
-#pragma warning restore VSTHRD002
-        MessageSource.Telegram => TgMessage!.LeftChatMember!.Username!,
-        _ => throw new ArgumentOutOfRangeException(nameof(SourceType), SourceType, null)
-    };
-
-    public string UserName => SourceType switch
-    {
-#pragma warning disable VSTHRD002
-#pragma warning disable VSTHRD104
-        MessageSource.Qq => ((QqBot)_bot).GetUserInfoAsync(QqMessage!.MemberUin).Result!.Nickname,
-#pragma warning restore VSTHRD104
-#pragma warning restore VSTHRD002
-        MessageSource.Telegram => $"{TgMessage!.LeftChatMember!.FirstName}{TgMessage!.LeftChatMember!.LastName}",
-        _ => throw new ArgumentOutOfRangeException(nameof(SourceType), SourceType, null)
-    };
-
-    public async Task ReplyAsync(MessagePair messages)
-    {
-        await _bot.SendMessageAsync(messages, SourceType switch
-        {
-            MessageSource.Qq => QqMessage!.GroupUin,
-            MessageSource.Telegram => TgMessage!.Chat.Id,
-            _ => throw new ArgumentOutOfRangeException(nameof(SourceType), SourceType, null)
-        }, SourceType is MessageSource.Telegram ? TgMessage : default);
-    }
+    private Lazy<BotUserInfo> MemberInfo => new(() => Bot.FetchUserInfo(Event.MemberUin).
+#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
+            Result
+#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
+        !);
 }

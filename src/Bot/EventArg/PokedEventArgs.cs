@@ -1,9 +1,10 @@
-using DXKumaBot.Bot.Message;
+using Lagrange.Core;
 using Lagrange.Core.Event.EventArg;
 
 namespace DXKumaBot.Bot.EventArg;
 
-public sealed class PokedEventArgs(QqBot bot, GroupPokeEvent message) : BotEventArgsBase
+public sealed class PokedEventArgs(BotContext bot, GroupPokeEvent message) : BotEventArgsBase(bot)
 {
-    public override BotMessage Message { get; } = new(bot, message.GroupUin, message.TargetUin);
+    public GroupPokeEvent Event => message;
+    public bool ToBot => Event.TargetUin == Bot.BotUin;
 }

@@ -7,12 +7,12 @@ public abstract class RegexFunctionBase
 {
     public async Task EntryAsync(object? sender, MessageReceivedEventArgs args)
     {
-        if (string.IsNullOrEmpty(args.Message.Text))
+        if (string.IsNullOrEmpty(args.Text.Value))
         {
             return;
         }
 
-        if (!MessageRegex().IsMatch(args.Message.Text))
+        if (!MessageRegex().IsMatch(args.Text.Value))
         {
             return;
         }
@@ -21,6 +21,5 @@ public abstract class RegexFunctionBase
     }
 
     private protected abstract Task MainAsync(object? sender, MessageReceivedEventArgs args);
-
     private protected abstract Regex MessageRegex();
 }

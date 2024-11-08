@@ -1,17 +1,15 @@
-using DXKumaBot.Bot.Message;
 using DXKumaBot.Utils;
-using System.Collections.Concurrent;
+using Lagrange.Core.Message;
 using System.Diagnostics.CodeAnalysis;
 
 namespace DXKumaBot.Functions.Gallery;
 
 public sealed record RakingData : IComparable<RakingData>
 {
-    private readonly ConcurrentQueue<DateTime> _dates;
-    public required long Id { get; init; }
-    public required MessageSource SourceType { get; init; }
+    private readonly Queue<DateTime> _dates;
+    public required uint Id { get; init; }
 
-    public required ConcurrentQueue<DateTime> Dates
+    public required Queue<DateTime> Dates
     {
         get
         {
@@ -45,15 +43,15 @@ public sealed record RakingData : IComparable<RakingData>
         return Dates.Count.CompareTo(other.Dates.Count);
     }
 
-    public static void Update(BotMessage message)
+    public static void Update(MessageChain message)
     {
-        RakingData data = Storage.Get<RakingData>(nameof(Gallery), message.UserId) ?? new()
+        Storage storage = Storage.GetFromName(nameof(Functions));
+        RakingData data = storage.Get<RakingData>(nameof(Gallery), message.FriendUin) ?? new()
         {
-            Id = message.ChatId,
-            SourceType = message.SourceType,
+            Id = message.GroupUin!.Value,
             Dates = []
         };
-        data.Dates.Enqueue(message.DateTime.Date);
-        Storage.Set(nameof(Gallery), data);
+        data.Dates.Enqueue(message.Time.Date);
+        storage.Set(nameof(Gallery), data);
     }
 }

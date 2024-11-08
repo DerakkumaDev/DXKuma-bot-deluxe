@@ -6,6 +6,11 @@ namespace DXKumaBot.Utils;
 
 public static class LagrangeHelper
 {
+    private static readonly Lazy<JsonSerializerOptions> _jsonSerializerOptions = new(() => new()
+    {
+        ReferenceHandler = ReferenceHandler.Preserve
+    });
+
     public static BotDeviceInfo GetDeviceInfo()
     {
         if (!File.Exists("DeviceInfo.json"))
@@ -40,9 +45,6 @@ public static class LagrangeHelper
         }
 
         string text = File.ReadAllText("Keystore.json");
-        return JsonSerializer.Deserialize<BotKeystore>(text, new JsonSerializerOptions
-        {
-            ReferenceHandler = ReferenceHandler.Preserve
-        });
+        return JsonSerializer.Deserialize<BotKeystore>(text, _jsonSerializerOptions.Value);
     }
 }

@@ -1,6 +1,7 @@
 using DXKumaBot.Bot.EventArg;
-using DXKumaBot.Bot.Message;
 using DXKumaBot.Utils;
+using Lagrange.Core.Common.Interface.Api;
+using Lagrange.Core.Message;
 using System.Text.RegularExpressions;
 
 namespace DXKumaBot.Functions.Interaction;
@@ -25,11 +26,13 @@ public sealed partial class WannaCao : RegexFunctionBase
 
     private protected override async Task MainAsync(object? sender, MessageReceivedEventArgs args)
     {
+        MessageBuilder messageBuilder = MessageBuilder.Group(args.GroupUin);
         int index = _random.Next();
-        (string Text, int PhotoIndex) reply = _replies[index];
-        string filePath = Path.Combine("Static", nameof(WannaCao), $"{reply.PhotoIndex}.png");
-        MediaMessage message = new(MediaType.Photo, filePath);
-        await args.Message.ReplyAsync(new(reply.Text, message), true);
+        (string text, int photoIndex) = _replies[index];
+        messageBuilder.Text(text);
+        string filePath = Path.Combine("Static", GetType().Name, $"{photoIndex}.png");
+        messageBuilder.Image(filePath);
+        await args.Bot.SendMessage(messageBuilder.Build());
     }
 
     [GeneratedRegex("^(香草|想草)(迪拉熊|dlx)$", RegexOptions.IgnoreCase | RegexOptions.Singleline)]

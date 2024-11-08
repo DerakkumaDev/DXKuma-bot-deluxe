@@ -1,9 +1,24 @@
+using DXKumaBot.Functions.Gallery;
+using DXKumaBot.Functions.Interaction;
+using DXKumaBot.Utils;
+
 namespace DXKumaBot;
 
-public sealed record Config(TelegramConfig Telegram);
+public sealed record Config(CacheConfig Cache, SpecialConfig Special)
+{
+    public void SetConfig()
+    {
+        Resource.CacheOutdateDays = Cache.OutdateDays;
+        MemberChange.SpecialGroup = Special.GroupUid;
+        Pick.SpecialGroup = Special.GroupUid;
+        PickNsfw.SpecialGroup = Special.GroupUid;
+    }
+}
 
-public sealed record TelegramConfig(string BotToken, ProxyConfig Proxy);
+public sealed record CacheConfig(int OutdateDays);
 
-public sealed record ProxyConfig(bool Enabled, Uri Url, ProxyCredentialConfig Credential);
+public sealed record SpecialConfig(uint GroupUid, List<uint> NSFWGroups);
 
-public sealed record ProxyCredentialConfig(bool Enabled, string UserName, string Password);
+public sealed record GalleryConfig(GalleryLimitConfig Limit);
+
+public sealed record GalleryLimitConfig(int Minites, int Times);

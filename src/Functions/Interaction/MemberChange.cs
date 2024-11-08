@@ -1,44 +1,37 @@
 using DXKumaBot.Bot.EventArg;
-using DXKumaBot.Bot.Message;
-using Telegram.Bot.Types;
+using Lagrange.Core.Common.Interface.Api;
+using Lagrange.Core.Message;
 
 namespace DXKumaBot.Functions.Interaction;
 
 public sealed class MemberChange
 {
-    private readonly int _specialGroup = 967611986;
+    static MemberChange()
+    {
+        SpecialGroup = 0;
+    }
+
+    public static uint SpecialGroup { private get; set; }
 
     public async Task JoinEntryAsync(object? sender, MembersAddedEventArgs args)
     {
-        string filePath = Path.Combine("Static", nameof(MemberChange), "0.png");
-        MediaMessage message = new(MediaType.Photo, filePath);
-        switch (args.SourceType)
-        {
-            case MessageSource.Qq:
-                await args.ReplyAsync(new(args.QqMessage!.GroupUin == _specialGroup
-                    ? $"恭喜{args.UserName}（{args.UserId}）发现了迪拉熊宝藏地带，发送dlxhelp试一下吧~"
-                    : $"欢迎{args.UserName}（{args.UserId}）加入本群，发送dlxhelp和迪拉熊一起玩吧~", message));
-                break;
-            case MessageSource.Telegram:
-                foreach (User user in args.TgMessage!.NewChatMembers!)
-                {
-                    await args.ReplyAsync(
-                        new($"欢迎{user.FirstName}{user.LastName}（{user.Username}）加入本群，发送dlxhelp和迪拉熊一起玩吧~"));
-                }
-
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(args));
-        }
+        MessageBuilder messageBuilder = MessageBuilder.Group(args.Event.GroupUin);
+        messageBuilder.Text(args.Event.GroupUin == SpecialGroup
+            ? $"恭喜{args.MemberName}（{args.MemberQid ?? args.Event.MemberUin.ToString()}）发现了迪拉熊宝藏地带，发送dlxhelp试一下吧~"
+            : $"欢迎{args.MemberName}（{args.MemberQid ?? args.Event.MemberUin.ToString()}）加入本群，发送dlxhelp和迪拉熊一起玩吧~");
+        string filePath = Path.Combine("Static", GetType().Name, "0.png");
+        messageBuilder.Image(filePath);
+        await args.Bot.SendMessage(messageBuilder.Build());
     }
 
     public async Task LeftEntryAsync(object? sender, MembersLeftEventArgs args)
     {
-        string filePath = Path.Combine("Static", nameof(MemberChange), "1.png");
-        MediaMessage message = new(MediaType.Photo, filePath);
-        await args.ReplyAsync(new(args.SourceType is MessageSource.Qq && args.QqMessage!.GroupUin == _specialGroup
-                ? $"很遗憾，{args.UserName}（{args.UserId}）离开了迪拉熊的小窝QAQ"
-                : $"{args.UserName}{(string.IsNullOrEmpty(args.UserId) ? $"（{args.UserId}）" : string.Empty)}离开了迪拉熊QAQ",
-            message));
+        MessageBuilder messageBuilder = MessageBuilder.Group(args.Event.GroupUin);
+        messageBuilder.Text(args.Event.GroupUin == SpecialGroup
+            ? $"很遗憾，{args.MemberName}（{args.MemberQid ?? args.Event.MemberUin.ToString()}）离开了迪拉熊的小窝QAQ"
+            : $"{args.MemberName}（{args.MemberQid ?? args.Event.MemberUin.ToString()}）离开了迪拉熊QAQ");
+        string filePath = Path.Combine("Static", GetType().Name, "1.png");
+        messageBuilder.Image(filePath);
+        await args.Bot.SendMessage(messageBuilder.Build());
     }
 }

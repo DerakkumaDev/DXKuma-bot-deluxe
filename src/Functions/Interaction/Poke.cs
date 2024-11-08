@@ -1,11 +1,11 @@
 using DXKumaBot.Bot.EventArg;
-using DXKumaBot.Bot.Message;
 using DXKumaBot.Utils;
-using System.Text.RegularExpressions;
+using Lagrange.Core.Common.Interface.Api;
+using Lagrange.Core.Message;
 
 namespace DXKumaBot.Functions.Interaction;
 
-public sealed partial class Poke : RegexFunctionBase
+public sealed class Poke
 {
     private readonly WeightsRandom _random = new([9, 9, 9, 9, 9, 9, 9, 9, 4, 4]);
 
@@ -23,32 +23,19 @@ public sealed partial class Poke : RegexFunctionBase
         "再戳迪拉熊就跟你绝交！"
     ];
 
-    public async Task QqEntryAsync(object? sender, PokedEventArgs args)
+    public async Task EntryAsync(object? sender, PokedEventArgs args)
     {
-        if (!args.Message.ToBot)
+        if (!args.ToBot)
         {
             return;
         }
 
-        MessagePair messages = GetReplyMessages();
-        await args.Message.ReplyAsync(messages, true);
-    }
-
-    private protected override async Task MainAsync(object? sender, MessageReceivedEventArgs args)
-    {
-        MessagePair messages = GetReplyMessages();
-        await args.Message.ReplyAsync(messages);
-    }
-
-    private MessagePair GetReplyMessages()
-    {
+        MessageBuilder messageBuilder = MessageBuilder.Group(args.Event.GroupUin);
         int index = _random.Next();
         string reply = _replies[index];
-        string filePath = Path.Combine("Static", nameof(Poke), $"{index}.png");
-        MediaMessage message = new(MediaType.Photo, filePath);
-        return new(reply, message);
+        messageBuilder.Text(reply);
+        string filePath = Path.Combine("Static", GetType().Name, $"{index}.png");
+        messageBuilder.Image(filePath);
+        await args.Bot.SendMessage(messageBuilder.Build());
     }
-
-    [GeneratedRegex("^戳屁(屁|股)$", RegexOptions.IgnoreCase | RegexOptions.Singleline)]
-    private protected override partial Regex MessageRegex();
 }

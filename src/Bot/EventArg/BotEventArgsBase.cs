@@ -1,8 +1,8 @@
-using DXKumaBot.Bot.Message;
+using Lagrange.Core;
 
 namespace DXKumaBot.Bot.EventArg;
 
-public abstract class BotEventArgsBase : EventArgs
+public abstract class BotEventArgsBase(BotContext bot) : EventArgs
 {
-    public abstract BotMessage Message { get; }
+    public BotContext Bot => bot;
 }

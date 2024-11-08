@@ -1,19 +1,15 @@
-using DXKumaBot.Bot.Message;
+using Lagrange.Core;
 using Lagrange.Core.Event.EventArg;
+using Lagrange.Core.Message.Entity;
 
 namespace DXKumaBot.Bot.EventArg;
 
-public sealed class MessageReceivedEventArgs : BotEventArgsBase
+public sealed class MessageReceivedEventArgs(BotContext bot, GroupMessageEvent message) : BotEventArgsBase(bot)
 {
-    public MessageReceivedEventArgs(IBot bot, GroupMessageEvent message)
-    {
-        Message = new(bot, message.Chain);
-    }
-
-    public MessageReceivedEventArgs(IBot bot, TgMessage message)
-    {
-        Message = new(bot, message);
-    }
-
-    public override BotMessage Message { get; }
+    public GroupMessageEvent Event => message;
+    public Lazy<string?> Text => new(() => Event.Chain.GetEntity<TextEntity>()?.Text);
+    public uint GroupUin => Event.Chain.GroupUin!.Value;
+    public uint TargetUin => Event.Chain.TargetUin;
+    public DateTime DateTime => Event.Chain.Time;
+    public bool MentionedBot => Event.Chain.TargetUin == Bot.BotUin;
 }
