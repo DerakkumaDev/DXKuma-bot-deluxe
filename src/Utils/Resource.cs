@@ -28,10 +28,10 @@ public static class Resource
             Directory.CreateDirectory(CachePathName);
         }
 
-        CacheOutdateDays = -1;
+        CacheValidityPeriod = -1;
     }
 
-    public static int CacheOutdateDays { private get; set; }
+    public static int CacheValidityPeriod { private get; set; }
 
     private static bool CheckAvailableCache(string type, int id)
     {
@@ -42,14 +42,14 @@ public static class Resource
             return false;
         }
 
-        if (CacheOutdateDays < 0)
+        if (CacheValidityPeriod < 0)
         {
             return true;
         }
 
         Storage storage = Storage.GetFromName(CachePathName);
         Cache? cache = storage.Get<Cache>(type, id);
-        if (cache is not null && DateTime.UtcNow - cache.CacheTime < TimeSpan.FromDays(CacheOutdateDays))
+        if (cache is not null && DateTime.UtcNow - cache.CacheTime < TimeSpan.FromDays(CacheValidityPeriod))
         {
             return true;
         }

@@ -14,7 +14,7 @@ namespace DXKumaBot.Bot;
 public class BotHostedService : IHostedService
 {
     private readonly BotContext _bot;
-    private readonly BotKeystore _keyStore;
+    private readonly BotKeystore? _keyStore;
 
     public BotHostedService()
     {
@@ -44,10 +44,10 @@ public class BotHostedService : IHostedService
         await Task.Yield();
     }
 
-    public event AsyncEventHandler<MessageReceivedEventArgs>? MessageReceived;
-    public event AsyncEventHandler<PokedEventArgs>? Poked;
-    public event AsyncEventHandler<MembersAddedEventArgs>? MembersAdded;
-    public event AsyncEventHandler<MembersLeftEventArgs>? MembersLeft;
+    private event AsyncEventHandler<MessageReceivedEventArgs>? MessageReceived;
+    private event AsyncEventHandler<PokedEventArgs>? Poked;
+    private event AsyncEventHandler<MembersAddedEventArgs>? MembersAdded;
+    private event AsyncEventHandler<MembersLeftEventArgs>? MembersLeft;
 
     private void RegisterFunctions()
     {

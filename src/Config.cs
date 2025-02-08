@@ -8,14 +8,14 @@ public sealed record Config(CacheConfig Cache, SpecialConfig Special)
 {
     public void SetConfig()
     {
-        Resource.CacheOutdateDays = Cache.OutdateDays;
+        Resource.CacheValidityPeriod = Cache.ValidityPeriod;
         MemberChange.SpecialGroup = Special.GroupUid;
         Pick.SpecialGroup = Special.GroupUid;
         PickNsfw.SpecialGroup = Special.GroupUid;
     }
 }
 
-public sealed record CacheConfig(int OutdateDays);
+public sealed record CacheConfig(int ValidityPeriod);
 
 public sealed record SpecialConfig(uint GroupUid, List<uint> NSFWGroups);
 
